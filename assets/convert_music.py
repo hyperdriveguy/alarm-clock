@@ -68,7 +68,7 @@ class CommandEncoder:
         'octave': 1,
         'notetype': lambda args: 2 if len(args) > 1 else 1,
         'pitchoffset': 2,
-        'tempo': 2,  # Fixed: tempo takes 2 bytes
+        'tempo': 3,  # Fixed: tempo takes 2 bytes
         'dutycycle': 2,
         'intensity': 2,
         'soundinput': 2,
@@ -520,8 +520,8 @@ def main():
             print(format_c_array(ch, data))
             print()
         except Exception as e:
-            # print(f"Error processing channel {ch}: {e}")
-            # sys.exit(1)
+            print(f"Error processing channel {ch}: {e}")
+            sys.exit(1)
             pass
 
 
