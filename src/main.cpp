@@ -1,7 +1,7 @@
 // src/main.cpp
 
 #include <Arduino.h>
-#include "TestSong2.h"
+#include "somebody.h"
 
 static constexpr int BUZZER_PINS[3]   = { 40, 41, 42 };
 static constexpr int LEDC_CH[3]       = { 0,  1,  2 };
@@ -63,12 +63,20 @@ static float getFreq(uint8_t pitch, uint8_t oct) {
 
 static void processCommand(int i) {
   auto &C = ch[i];
+  
+  // Handle loop commands first to avoid advancing idx
+  if (C.data[C.idx] == 0xFF || C.data[C.idx] == 0xEA) {
+    C.idx = 0;
+    Serial.printf("Ch%d LOOP\n", i+1);
+    // Fall through to process first command after loop
+  }
+  
   uint8_t cmd = C.data[C.idx++];
   Serial.printf("Ch%d cmd=0x%02X idx=%u ", i+1, cmd, C.idx-1);
 
   if (cmd<=0xCF) {
     uint8_t p=cmd>>4, L=cmd&0xF;
-    C.ticks_left=L;
+    C.ticks_left = (L == 0) ? 16 : L;
     float f=getFreq(p,C.octave);
     if(p==0) {
       Serial.printf("REST len=%u\n",L);
@@ -84,27 +92,31 @@ static void processCommand(int i) {
   if((cmd&0xF8)==0xD0) {
     C.octave=0xD7-cmd;
     Serial.printf("OCT→%u\n",C.octave);
+    processCommand(i); // Continue to next command
     return;
   }
   if(cmd==0xDA) {
     uint16_t t=(uint16_t(C.data[C.idx])<<8)|C.data[C.idx+1];
     C.idx+=2; tick_ms=t; last_tick=millis();
     Serial.printf("TEMPO→%ums\n",t);
+    processCommand(i); // Continue to next command
     return;
   }
   if(cmd==0xDC) {
     C.volume=C.data[C.idx++];
     Serial.printf("VOL→%u\n",C.volume);
+    processCommand(i); // Continue to next command
     return;
   }
   if(cmd==0xFF||cmd==0xEA) {
-    C.idx=0;
-    Serial.println("LOOP");
+    // Already handled at top
+    processCommand(i); // Continue to next command
     return;
   }
   uint8_t s=COMMAND_SIZES[cmd];
   Serial.printf("SKIP %u\n",s-1);
   if(s>1) C.idx+=s-1;
+  processCommand(i); // Continue to next command
 }
 
 void setup() {
@@ -113,14 +125,6 @@ void setup() {
 
   initCommandSizes();
 
-  // ─── DUMP COMMAND_SIZES ────────────────────────────────────────────────
-  Serial.println("Opcode → size");
-  for (uint16_t op = 0; op < 256; ++op) {
-    Serial.printf("0x%02X → %u\n", op, COMMAND_SIZES[op]);
-  }
-  Serial.println("Waiting 5 seconds before starting playback...");
-  delay(5000);
-  // ────────────────────────────────────────────────────────────────────────
 
   // initialize LEDC and channel state...
   for (int i = 0; i < 3; i++) {
@@ -131,14 +135,11 @@ void setup() {
 
   // prime each to first note/rest
   for (int i = 0; i < 3; i++) {
-    while (ch[i].ticks_left == 0) {
-      processCommand(i);
-    }
+    processCommand(i);
   }
 
   last_tick = millis();
 }
-
 
 void loop() {
   unsigned long now=millis();
@@ -161,10 +162,4 @@ void loop() {
     }
     processCommand(i);
   }
-
-  // sync check
-  bool ok = (ch[0].idx==ch[1].idx) && (ch[1].idx==ch[2].idx)
-         && (ch[0].ticks_left==ch[1].ticks_left)
-         && (ch[1].ticks_left==ch[2].ticks_left);
-  Serial.println(ok ? "*** SYNC OK ***" : "*** DESYNC ***");
 }
