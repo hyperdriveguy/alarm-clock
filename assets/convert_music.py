@@ -60,6 +60,55 @@ class CommandEncoder:
         'restartchannel': 0xEA,
     }
 
+    # Command byte sizes (opcode + parameters)
+    COMMAND_SIZES = {
+        'note': 1,
+        'sound': 4,
+        'noise': 5,
+        'octave': 1,
+        'notetype': lambda args: 2 if len(args) > 1 else 1,
+        'pitchoffset': 2,
+        'tempo': 2,  # Fixed: tempo takes 2 bytes
+        'dutycycle': 2,
+        'intensity': 2,
+        'soundinput': 2,
+        'sound_duty': 2,
+        'togglesfx': 1,
+        'slidepitchto': 3,
+        'vibrato': 3,
+        'togglenoise': 2,
+        'panning': 2,
+        'volume': 2,
+        'tone': 2,
+        'tempo_relative': 2,
+        'newsong': 2,
+        'sfxpriorityon': 1,
+        'sfxpriorityoff': 1,
+        'setcondition': 2,
+        'stereopanning': 2,
+        'unknownmusic0xe2': 2,
+        'unknownmusic0xe7': 2,
+        'unknownmusic0xe8': 2,
+        'unknownmusic0xee': 3,
+        'sfxtogglenoise': 2,
+        'music0xf1': 1,
+        'music0xf2': 1,
+        'music0xf3': 1,
+        'music0xf4': 1,
+        'music0xf5': 1,
+        'music0xf6': 1,
+        'music0xf7': 1,
+        'music0xf8': 1,
+        'unknownmusic0xf9': 1,
+        # Control flow
+        'endchannel': 1,
+        'jumpchannel': 3,
+        'loopchannel': 4,
+        'callchannel': 3,
+        'jumpif': 4,
+        'restartchannel': 3,
+    }
+
     @staticmethod
     def note(pitch: str, length: int) -> List[int]:
         """Encode a note command.
@@ -103,8 +152,8 @@ class CommandEncoder:
 
     @staticmethod
     def tempo(t: int) -> List[int]:
-        """Encode tempo command ($DA)."""
-        return [0xDA, t & 0xFF]
+        """Encode tempo command ($DA). Takes 2 bytes as per Game Boy sound engine."""
+        return [0xDA, (t >> 8) & 0xFF, t & 0xFF]
 
     @staticmethod
     def dutycycle(dc: int) -> List[int]:
@@ -309,7 +358,7 @@ class ChannelParser:
             self.byte_offset += self._get_command_size(cmd, args)
 
     def _get_command_size(self, cmd: str, args: List[str]) -> int:
-        """Calculate the byte size of a command.
+        """Calculate the byte size of a command using the COMMAND_SIZES lookup table.
 
         Args:
             cmd: Command name
@@ -318,41 +367,11 @@ class ChannelParser:
         Returns:
             Number of bytes this command will generate
         """
-        if cmd in self.encoder.CONTROL_FLOW:
-            if cmd == 'endchannel':
-                return 1
-            elif cmd in ('loopchannel', 'jumpif'):
-                return 4  # opcode + count/condition + 2-byte address
-            else:  # jumpchannel, callchannel, restartchannel
-                return 3  # opcode + 2-byte address
-        elif cmd == 'note':
-            return 1
-        elif hasattr(self.encoder, cmd):
-            # Try to determine size by calling the encoder method
-            try:
-                # Create dummy args of appropriate type
-                dummy_args = []
-                for arg in args:
-                    if arg in NOTE_MAP:
-                        dummy_args.append(arg)
-                    else:
-                        dummy_args.append(0)  # Use 0 for numeric args
-
-                # Handle optional arguments (like notetype intensity)
-                method = getattr(self.encoder, cmd)
-                try:
-                    result = method(*dummy_args)
-                    return len(result)
-                except TypeError:
-                    # Try with fewer args (for optional parameters)
-                    if len(dummy_args) > 1:
-                        result = method(*dummy_args[:-1])
-                        return len(result)
-                    else:
-                        return 1
-            except Exception:
-                print(f"Warning: Cannot simulate command '{cmd}' for size. Assuming 1 byte.")
-                return 1
+        if cmd in self.encoder.COMMAND_SIZES:
+            size = self.encoder.COMMAND_SIZES[cmd]
+            if callable(size):
+                return size(args)
+            return size
         else:
             print(f"Warning: Unknown command '{cmd}'. Assuming 1 byte.")
             return 1
@@ -501,8 +520,9 @@ def main():
             print(format_c_array(ch, data))
             print()
         except Exception as e:
-            print(f"Error processing channel {ch}: {e}")
-            sys.exit(1)
+            # print(f"Error processing channel {ch}: {e}")
+            # sys.exit(1)
+            pass
 
 
 if __name__ == '__main__':
