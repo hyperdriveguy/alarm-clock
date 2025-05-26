@@ -12,7 +12,7 @@ Music_RivalBattle_Ch1:
 	dutycycle $0
 	tone $0002
 	stereopanning $f0
-	octave 3
+	octave 4
 	note C#, 1
 	note C#, 1
 	note C#, 1
@@ -45,22 +45,6 @@ Music_RivalBattle_Ch1:
 	note F#, 1
 	note F#, 1
 	note F#, 1
-	; note __, 1
-	; note __, 2
-	; note __, 3
-	; note __, 4
-	; note __, 5
-	; note __, 6
-	; note __, 7
-	; note __, 8
-	; note __, 9
-	; note __, 10
-	; note __, 11
-	; note __, 12
-	; note __, 13
-	; note __, 14
-	; note __, 15
-	; note __, 16
 	note C#, 1
 	note C#, 1
 	note C#, 1
@@ -118,87 +102,177 @@ Music_RivalBattle_Ch1:
 	note F_, 2
 	note D#, 2
 	note F_, 2
-	octave 4
+	octave 5
 	note C_, 2
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 1
-	octave 3
+	octave 4
 	note A#, 1
 	note G#, 1
 	note A#, 1
-	octave 4
+	octave 5
 	note C#, 4
 
 Music_RivalBattle_Ch1_Loop:
+	octave 4
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note F#, 1
+	note G#, 1
+	note A#, 1
+	note G#, 1
+	note D#, 1
+	note G#, 1
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	note F#, 2
+	note F#, 2
+	note F#, 2
+	note F#, 2
+	note G#, 2
+	note G#, 2
+	note G#, 2
+	note G#, 2
+	note F#, 2
+	note F#, 2
+	note F#, 2
+	note F_, 2
 	octave 3
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
 	note A#, 1
-	note G#, 1
-	note F#, 1
-	note G#, 1
 	note A#, 1
-	note G#, 1
-	note D#, 1
-	note G#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
 	note F_, 2
 	note F_, 2
 	note F_, 2
@@ -215,97 +289,7 @@ Music_RivalBattle_Ch1_Loop:
 	note F#, 2
 	note F#, 2
 	note F_, 2
-	octave 2
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
 	octave 3
-	note F_, 2
-	note F_, 2
-	note F_, 2
-	note F_, 2
-	note F#, 2
-	note F#, 2
-	note F#, 2
-	note F#, 2
-	note G#, 2
-	note G#, 2
-	note G#, 2
-	note G#, 2
-	note F#, 2
-	note F#, 2
-	note F#, 2
-	note F_, 2
-	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 2
@@ -338,17 +322,17 @@ Music_RivalBattle_Ch1_Loop:
 	note A#, 2
 	note A#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note F#, 16
 	note F_, 16
 	note A#, 12
-	octave 2
+	octave 3
 	note A#, 4
 	tempo 69
-	octave 3
+	octave 4
 	note C_, 1
 	note C#, 11
-	octave 2
+	octave 3
 	note A#, 16
 	note A#, 4
 	tempo 137
@@ -378,23 +362,23 @@ Music_RivalBattle_Ch1_Loop:
 	note __, 4
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 6
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -406,36 +390,36 @@ Music_RivalBattle_Ch1_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 4
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
 	note C#, 4
 	note C_, 14
 	note __, 16
-	octave 2
-	note A#, 2
-	note A#, 2
 	octave 3
+	note A#, 2
+	note A#, 2
+	octave 4
 	note D#, 2
 	note D#, 2
 	note F_, 2
@@ -449,11 +433,11 @@ Music_RivalBattle_Ch1_Loop:
 	note F_, 2
 	note D#, 2
 	note C#, 2
-	octave 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
 	octave 3
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	octave 4
 	note D#, 2
 	note D#, 2
 	note F_, 2
@@ -465,12 +449,12 @@ Music_RivalBattle_Ch1_Loop:
 	note G#, 2
 	note G#, 2
 	note F_, 2
-	octave 2
-	note F_, 2
-	note F#, 2
-	note G#, 2
 	octave 3
 	note F_, 2
+	note F#, 2
+	note G#, 2
+	octave 4
+	note F_, 2
 	note F_, 2
 	note F_, 2
 	note F_, 2
@@ -486,44 +470,44 @@ Music_RivalBattle_Ch1_Loop:
 	note F#, 2
 	note F#, 2
 	note F_, 2
-	octave 1
+	octave 2
 	note A#, 16
-	octave 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	octave 1
-	note F_, 16
-	octave 2
-	note F_, 2
-	note F_, 2
-	note F_, 2
-	note F_, 2
-	note F_, 2
-	note F_, 2
-	note F_, 2
-	note F_, 2
 	octave 3
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	octave 2
+	note F_, 16
+	octave 3
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	note F_, 2
+	octave 4
 	note F#, 16
 	note F_, 16
 	note A#, 12
-	octave 2
+	octave 3
 	note A#, 4
 	tempo 69
-	octave 3
+	octave 4
 	note C_, 1
 	note C#, 11
-	octave 2
+	octave 3
 	note A#, 16
 	note A#, 4
 	tempo 137
 	note A#, 8
-	octave 3
+	octave 4
 	note C_, 8
 	note C#, 8
 	note D#, 8
@@ -531,25 +515,25 @@ Music_RivalBattle_Ch1_Loop:
 	note C_, 8
 	note __, 4
 	note __, 2
-	octave 2
-	note A#, 2
 	octave 3
+	note A#, 2
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 6
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -561,26 +545,26 @@ Music_RivalBattle_Ch1_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 4
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -605,19 +589,19 @@ Music_RivalBattle_Ch1_Loop:
 	note D#, 6
 	note C#, 2
 	note C#, 2
-	octave 2
+	octave 3
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note D#, 6
 	note C#, 2
 	note C#, 2
-	octave 2
+	octave 3
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note D#, 6
 	note C#, 2
 	note C#, 8
@@ -627,68 +611,68 @@ Music_RivalBattle_Ch1_Loop:
 	note D#, 6
 	note C#, 2
 	note C#, 2
-	octave 2
+	octave 3
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note D#, 6
 	note C#, 2
 	note C#, 8
 	note D#, 6
 	note C#, 2
 	note C#, 2
-	octave 2
+	octave 3
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note D#, 6
 	note C#, 2
 	note C#, 8
 	note D#, 6
 	note C#, 2
 	note C#, 2
-	octave 2
+	octave 3
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note D#, 6
 	note C#, 2
 	note C#, 8
 	note D#, 6
 	note C#, 2
 	note C#, 2
-	octave 2
+	octave 3
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note D#, 6
 	note C#, 2
 	note C#, 8
 	note __, 4
 	note __, 2
-	octave 2
-	note A#, 2
 	octave 3
+	note A#, 2
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 6
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -700,26 +684,26 @@ Music_RivalBattle_Ch1_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 4
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -739,18 +723,18 @@ Music_RivalBattle_Ch1_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 6
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -762,26 +746,26 @@ Music_RivalBattle_Ch1_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 4
-	octave 3
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -825,10 +809,10 @@ Music_RivalBattle_Ch1_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 2
+	octave 3
 	note A#, 2
 	note __, 2
-	octave 3
+	octave 4
 	note C#, 2
 	note F#, 2
 	note F#, 3
@@ -858,42 +842,42 @@ Music_RivalBattle_Ch2:
 	notetype $c, $A5
 	dutycycle $1
 	tone $0001
+	octave 5
+	note C#, 1
+	note C#, 1
+	note C#, 1
+	note C#, 1
+	note C#, 1
+	note C#, 1
+	note C#, 1
+	note C#, 1
+	note D#, 1
+	note D#, 1
+	note D#, 1
+	note D#, 1
+	note D#, 1
+	note D#, 1
+	note D#, 1
+	note D#, 1
+	note F_, 1
+	note F_, 1
+	note F_, 1
+	note F_, 1
+	note F_, 1
+	note F_, 1
+	note F_, 1
+	note F_, 1
+	note F#, 1
+	note F#, 1
+	note F#, 1
+	note F#, 1
+	note F#, 1
+	note F#, 1
+	note F#, 1
+	note F#, 1
 	octave 4
-	note C#, 1
-	note C#, 1
-	note C#, 1
-	note C#, 1
-	note C#, 1
-	note C#, 1
-	note C#, 1
-	note C#, 1
-	note D#, 1
-	note D#, 1
-	note D#, 1
-	note D#, 1
-	note D#, 1
-	note D#, 1
-	note D#, 1
-	note D#, 1
-	note F_, 1
-	note F_, 1
-	note F_, 1
-	note F_, 1
-	note F_, 1
-	note F_, 1
-	note F_, 1
-	note F_, 1
-	note F#, 1
-	note F#, 1
-	note F#, 1
-	note F#, 1
-	note F#, 1
-	note F#, 1
-	note F#, 1
-	note F#, 1
-	octave 3
 	note A#, 1
-	octave 4
+	octave 5
 	note A#, 1
 	note A#, 1
 	note __, 1
@@ -908,9 +892,9 @@ Music_RivalBattle_Ch2:
 	note F_, 1
 	note F_, 1
 	note __, 1
-	octave 3
-	note A#, 1
 	octave 4
+	note A#, 1
+	octave 5
 	note A#, 1
 	note A#, 1
 	note __, 1
@@ -942,27 +926,27 @@ Music_RivalBattle_Ch2:
 	note F_, 1
 	note C#, 1
 	note C_, 1
-	octave 3
-	note A#, 1
 	octave 4
+	note A#, 1
+	octave 5
 	note C_, 1
 	note C#, 1
 	note C_, 1
-	octave 3
-	note A#, 1
 	octave 4
+	note A#, 1
+	octave 5
 	note C_, 1
 	note C#, 1
 	note C_, 1
-	octave 3
-	note A#, 1
 	octave 4
+	note A#, 1
+	octave 5
 	note C_, 1
 	note C#, 1
 	note C_, 1
-	octave 3
-	note A#, 1
 	octave 4
+	note A#, 1
+	octave 5
 	note C_, 1
 	note F#, 1
 	note F_, 1
@@ -979,31 +963,31 @@ Music_RivalBattle_Ch2:
 	note A#, 4
 
 Music_RivalBattle_Ch2_Loop:
-	octave 3
-	note A#, 2
-	note A#, 2
 	octave 4
+	note A#, 2
+	note A#, 2
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 8
 	note __, 2
-	octave 3
-	note A#, 2
-	note A#, 2
 	octave 4
+	note A#, 2
+	note A#, 2
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 4
 	note G#, 4
@@ -1012,46 +996,46 @@ Music_RivalBattle_Ch2_Loop:
 	note __, 8
 	note __, 4
 	note __, 2
-	octave 3
-	note A#, 2
-	note A#, 2
-	note A#, 2
 	octave 4
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 6
 	note __, 2
 	note A#, 2
 	note A#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 8
 	note __, 2
-	octave 3
-	note A#, 2
-	note A#, 2
 	octave 4
+	note A#, 2
+	note A#, 2
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note A#, 4
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 4
 	note G#, 4
@@ -1062,34 +1046,34 @@ Music_RivalBattle_Ch2_Loop:
 	note __, 8
 	note __, 4
 	note __, 2
-	octave 3
-	note A#, 2
-	note A#, 2
-	note A#, 2
 	octave 4
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 4
 	note A#, 2
 	note A#, 2
 	note A#, 2
 	note A#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 4
 	note C#, 6
 	note __, 4
@@ -1106,24 +1090,24 @@ Music_RivalBattle_Ch2_Loop:
 	note C#, 10
 	note __, 2
 	note __, 2
-	octave 3
-	note A#, 4
 	octave 4
+	note A#, 4
+	octave 5
 	note C_, 1
 	note C#, 11
-	octave 3
+	octave 4
 	note A#, 16
 	note A#, 4
 	note A#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 4
 	note F_, 2
@@ -1133,25 +1117,25 @@ Music_RivalBattle_Ch2_Loop:
 	note D#, 10
 	note __, 4
 	note __, 2
-	octave 3
-	note A#, 2
 	octave 4
+	note A#, 2
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 6
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -1163,34 +1147,34 @@ Music_RivalBattle_Ch2_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 4
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
 	note C#, 4
 	note C_, 14
-	octave 2
-	note A#, 2
 	octave 3
+	note A#, 2
+	octave 4
 	note A#, 2
 	note A#, 2
 	note D#, 2
@@ -1199,28 +1183,28 @@ Music_RivalBattle_Ch2_Loop:
 	note C#, 4
 	note A#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 8
 	note __, 2
-	octave 3
-	note A#, 2
-	note A#, 2
 	octave 4
+	note A#, 2
+	note A#, 2
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 4
 	note G#, 4
@@ -1229,34 +1213,34 @@ Music_RivalBattle_Ch2_Loop:
 	note __, 8
 	note __, 4
 	note __, 2
-	octave 3
-	note A#, 2
-	note A#, 2
-	note A#, 2
 	octave 4
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 4
 	note A#, 2
 	note A#, 2
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 4
 	note C#, 6
 	note __, 4
@@ -1274,24 +1258,24 @@ Music_RivalBattle_Ch2_Loop:
 	note D#, 2
 	note C#, 2
 	note C_, 2
-	octave 3
-	note A#, 8
 	octave 4
+	note A#, 8
+	octave 5
 	note C_, 1
 	note C#, 11
-	octave 3
+	octave 4
 	note A#, 16
 	note A#, 4
 	note A#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note D#, 4
 	note F_, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note G#, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note G#, 4
 	note F_, 4
 	note F_, 2
@@ -1301,25 +1285,25 @@ Music_RivalBattle_Ch2_Loop:
 	note F#, 10
 	note __, 4
 	note __, 2
-	octave 3
-	note A#, 2
 	octave 4
+	note A#, 2
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 6
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -1331,26 +1315,26 @@ Music_RivalBattle_Ch2_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 4
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -1403,25 +1387,25 @@ Music_RivalBattle_Ch2_Loop:
 	note __, 4
 	note __, 4
 	note __, 2
-	octave 3
-	note A#, 2
 	octave 4
+	note A#, 2
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 6
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -1433,26 +1417,26 @@ Music_RivalBattle_Ch2_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 4
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -1472,18 +1456,18 @@ Music_RivalBattle_Ch2_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 6
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -1495,26 +1479,26 @@ Music_RivalBattle_Ch2_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 4
 	note A#, 4
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
 	note A#, 2
-	octave 4
+	octave 5
 	note C_, 2
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 4
-	octave 4
+	octave 5
 	note C#, 2
 	note C#, 2
 	note C#, 2
@@ -1558,10 +1542,10 @@ Music_RivalBattle_Ch2_Loop:
 	note C_, 2
 	note C_, 2
 	note C#, 4
-	octave 3
+	octave 4
 	note A#, 2
 	note __, 2
-	octave 4
+	octave 5
 	note C#, 2
 	note F#, 2
 	note F#, 3
@@ -1583,9 +1567,9 @@ Music_RivalBattle_Ch2_Loop:
 	note C#, 2
 	note C#, 2
 	note C#, 10
-	octave 2
-	note A#, 2
 	octave 3
+	note A#, 2
+	octave 4
 	note A#, 2
 	note A#, 2
 	note D#, 2
@@ -1599,193 +1583,115 @@ Music_RivalBattle_Ch3:
 	notetype $c, $27
 	tone $0003
 	stereopanning $0f
-	octave 2
+	octave 3
 	note C#, 16
 	note C#, 10
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 2
-	octave 1
-	note A#, 1
 	octave 2
+	note A#, 1
+	octave 3
 	note A#, 1
 	note __, 4
-	octave 1
-	note A#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note A#, 2
 	note __, 4
-	octave 1
-	note A#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note A#, 2
 	note __, 4
-	octave 1
-	note A#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note A#, 2
 	note __, 4
-	octave 1
-	note A#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note A#, 2
 
 Music_RivalBattle_Ch3_Loop:
-	octave 2
+	octave 3
 	note A#, 2
 	note A#, 1
 	note A#, 1
-	octave 3
+	octave 4
 	note C#, 2
-	octave 2
+	octave 3
 	note F#, 1
 	note A#, 1
 	note A#, 2
 	note A#, 1
 	note A#, 1
+	octave 4
+	note C#, 2
 	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note D#, 2
-	note D#, 2
-	note D#, 2
-	note D#, 2
-	note D#, 2
-	note D#, 2
-	note D#, 2
-	note F_, 2
-	note F#, 2
-	note F#, 2
-	note F#, 2
-	note F_, 2
-	note F#, 2
-	note F#, 2
-	note F#, 2
-	note C#, 2
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
 	note F#, 1
 	note A#, 1
 	note A#, 2
@@ -1797,55 +1703,25 @@ Music_RivalBattle_Ch3_Loop:
 	note A#, 2
 	note A#, 1
 	note A#, 1
-	octave 3
+	octave 4
 	note C#, 2
-	octave 2
+	octave 3
 	note F#, 1
 	note A#, 1
 	note A#, 2
 	note A#, 1
 	note A#, 1
-	octave 3
+	octave 4
 	note C#, 2
-	octave 2
+	octave 3
 	note F#, 1
 	note A#, 1
 	note A#, 2
 	note A#, 1
 	note A#, 1
-	octave 3
+	octave 4
 	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
 	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
-	note F#, 1
-	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
-	note C#, 2
-	octave 2
 	note F#, 1
 	note A#, 1
 	note A#, 2
@@ -1854,12 +1730,14 @@ Music_RivalBattle_Ch3_Loop:
 	note A#, 2
 	note A#, 1
 	note A#, 1
-	note A#, 2
-	note A#, 1
-	note A#, 1
-	octave 3
+	octave 4
 	note C#, 2
-	octave 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
 	note F#, 1
 	note A#, 1
 	note D#, 2
@@ -1878,55 +1756,161 @@ Music_RivalBattle_Ch3_Loop:
 	note F#, 2
 	note F#, 2
 	note C#, 2
-	octave 1
 	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	note A#, 2
+	note A#, 1
+	note A#, 1
+	octave 4
+	note C#, 2
+	octave 3
+	note F#, 1
+	note A#, 1
+	note D#, 2
+	note D#, 2
+	note D#, 2
+	note D#, 2
+	note D#, 2
+	note D#, 2
+	note D#, 2
+	note F_, 2
+	note F#, 2
+	note F#, 2
+	note F#, 2
+	note F_, 2
+	note F#, 2
+	note F#, 2
+	note F#, 2
+	note C#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note C#, 2
 	note F_, 2
-	octave 1
-	note A#, 2
-	note A#, 2
 	octave 2
+	note A#, 2
+	note A#, 2
+	octave 3
 	note C#, 2
 	note F_, 2
-	octave 1
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
 	octave 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	octave 3
 	note C#, 2
 	note F_, 2
-	octave 1
-	note A#, 2
-	note A#, 2
 	octave 2
+	note A#, 2
+	note A#, 2
+	octave 3
 	note C#, 2
 	note F_, 2
-	octave 1
-	note A#, 2
-	note A#, 2
 	octave 2
+	note A#, 2
+	note A#, 2
+	octave 3
 	note C#, 2
 	note F_, 2
-	octave 1
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
-	note A#, 2
 	octave 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	note A#, 2
+	octave 3
 	note C#, 2
 	note F_, 2
-	octave 1
-	note A#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note F#, 16
 	note G#, 16
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 2
@@ -1937,7 +1921,7 @@ Music_RivalBattle_Ch3_Loop:
 	note A#, 2
 	note A#, 2
 	note __, 2
-	octave 2
+	octave 3
 	note G#, 2
 	note __, 2
 	note A#, 2
@@ -1950,65 +1934,65 @@ Music_RivalBattle_Ch3_Loop:
 	note __, 2
 	note A#, 4
 	note __, 4
-	octave 1
+	octave 2
 	note A#, 16
 	note A#, 12
 	note A#, 2
-	octave 2
+	octave 3
 	note C#, 2
 	note C#, 16
 	note __, 16
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note C_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note D#, 6
 	note A#, 1
 	note __, 1
-	octave 3
+	octave 4
 	note A#, 1
 	note __, 1
 	note A#, 1
@@ -2020,13 +2004,13 @@ Music_RivalBattle_Ch3_Loop:
 	note G#, 1
 	note __, 1
 	note C#, 4
-	octave 2
-	note A#, 16
 	octave 3
+	note A#, 16
+	octave 4
 	note C_, 16
 	note C#, 16
 	note D#, 16
-	octave 2
+	octave 3
 	note D#, 2
 	note D#, 2
 	note D#, 2
@@ -2043,19 +2027,19 @@ Music_RivalBattle_Ch3_Loop:
 	note F#, 2
 	note F#, 2
 	note C#, 2
+	octave 4
+	note C#, 16
+	note C#, 16
 	octave 3
-	note C#, 16
-	note C#, 16
-	octave 2
 	note A#, 16
 	note A#, 16
 	note A#, 16
 	note F#, 16
 	note F_, 16
-	octave 1
+	octave 2
 	note A#, 2
 	note __, 2
-	octave 2
+	octave 3
 	note G#, 2
 	note __, 2
 	note A#, 2
@@ -2072,7 +2056,7 @@ Music_RivalBattle_Ch3_Loop:
 	note A#, 2
 	note A#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C_, 2
@@ -2093,63 +2077,63 @@ Music_RivalBattle_Ch3_Loop:
 	note C_, 2
 	note C_, 4
 	note __, 16
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note C_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C_, 4
 	note D#, 6
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note C_, 4
-	octave 1
-	note A#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note F#, 16
 	note G#, 16
 	note D#, 6
@@ -2185,30 +2169,30 @@ Music_RivalBattle_Ch3_Loop:
 	note A#, 2
 	note A#, 2
 	note A#, 2
-	octave 3
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C#, 2
 	note C#, 4
-	octave 2
-	note G#, 2
-	note G#, 2
-	note G#, 2
 	octave 3
+	note G#, 2
+	note G#, 2
+	note G#, 2
+	octave 4
 	note C_, 2
 	note C_, 2
 	note C#, 2
 	note C#, 4
-	octave 2
-	note F#, 2
-	note F#, 2
-	note F#, 2
 	octave 3
+	note F#, 2
+	note F#, 2
+	note F#, 2
+	octave 4
 	note C#, 2
 	note C#, 2
 	note C_, 2
 	note C_, 4
-	octave 2
+	octave 3
 	note F#, 2
 	note F#, 2
 	note F#, 2
@@ -2235,120 +2219,120 @@ Music_RivalBattle_Ch3_Loop:
 	note G#, 4
 	note G#, 4
 	note __, 8
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note C_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note D#, 4
 	note C_, 2
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note C_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note C_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note D#, 4
 	note F_, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note F_, 4
 	note D#, 4
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note D#, 4
 	note C_, 2
-	octave 1
+	octave 2
 	note A#, 2
 	note A#, 4
-	octave 2
+	octave 3
 	note C#, 4
 	note C_, 4
-	octave 1
-	note A#, 2
 	octave 2
+	note A#, 2
+	octave 3
 	note A#, 2
 	note A#, 2
 	note A#, 2
@@ -2415,7 +2399,7 @@ Music_RivalBattle_Ch3_Loop:
 	note D#, 2
 	note A#, 1
 	note __, 1
-	octave 3
+	octave 4
 	note A#, 1
 	note __, 1
 	note A#, 1
