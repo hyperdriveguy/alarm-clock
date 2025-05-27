@@ -120,68 +120,85 @@ float MusicPlayer::getFreq(uint8_t pitch, uint8_t oct) {
     return f * powf(2.0f, float(oct - baseOct));
 }
 
+/**
+ * @brief   Pulls and executes commands for channel i until we hit a note or rest.
+ *
+ * Subsequent “meta‐commands” (tempo, volume, octave, loop, skips) are
+ * handled inline rather than via recursion to keep stack usage minimal.
+ *
+ * @param   i  channel index (0–2)
+ */
 void MusicPlayer::processCommand(int i) {
-    auto& ch = channels_[i];
-    
-    // Handle loop commands first to avoid advancing idx
-    if (ch.data[ch.idx] == 0xFF || ch.data[ch.idx] == 0xEA) {
+    auto &ch = channels_[i];
+    bool keepGoing = true;
+  
+    while (keepGoing) {
+      keepGoing = false;
+      uint8_t cmd = ch.data[ch.idx++];
+      MDEBUG_PRINTF("Ch%d cmd=0x%02X idx=%u ", i+1, cmd, ch.idx-1);
+  
+      // loop back to start of data
+      if (cmd == 0xFF || cmd == 0xEA) {
         ch.idx = 0;
-        MDEBUG_PRINTF("Ch%d LOOP\n", i+1);
-    }
-    
-    uint8_t cmd = ch.data[ch.idx++];
-    MDEBUG_PRINTF("Ch%d cmd=0x%02X idx=%u ", i+1, cmd, ch.idx-1);
-
-    if (cmd <= 0xCF) {
+        MDEBUG_PRINTF("LOOP\n");
+        keepGoing = true;
+        continue;
+      }
+  
+      // 0x00–0xCF: note/rest
+      if (cmd <= 0xCF) {
         uint8_t p = cmd >> 4, L = cmd & 0xF;
         ch.ticks_left = (L == 0) ? 16 : L;
-        float f = getFreq(p, ch.octave);
-        
         if (p == 0) {
-            MDEBUG_PRINTF("REST len=%u\n", L);
-            silenceChannel(i);
+          MDEBUG_PRINTF("REST len=%u\n", L);
+          silenceChannel(i);
         } else {
-            MDEBUG_PRINTF("NOTE p=%u len=%u f=%.1fHz\n", p, L, f);
-            ledcWriteTone(ledc_channels_[i], uint32_t(f + 0.5f));
-            ledcWrite(ledc_channels_[i], ch.volume);
+          float f = getFreq(p, ch.octave);
+          MDEBUG_PRINTF("NOTE p=%u len=%u f=%.1fHz\n", p, L, f);
+          ledcWriteTone(ledc_channels_[i], uint32_t(f + 0.5f));
+          ledcWrite(ledc_channels_[i], ch.volume);
         }
-        return;
-    }
-    
-    if ((cmd & 0xF8) == 0xD0) {
+        return;  // done for this tick
+      }
+  
+      // command → new octave
+      if ((cmd & 0xF8) == 0xD0) {
         ch.octave = 0xD7 - cmd;
         MDEBUG_PRINTF("OCT→%u\n", ch.octave);
-        processCommand(i);
-        return;
-    }
-    
-    if (cmd == 0xDA) {
-        uint16_t t = (uint16_t(ch.data[ch.idx]) << 8) | ch.data[ch.idx + 1];
+        keepGoing = true;
+        continue;
+      }
+  
+      // tempo change (0xDA): 2-byte
+      if (cmd == 0xDA) {
+        uint16_t t = (uint16_t(ch.data[ch.idx]) << 8) | ch.data[ch.idx+1];
         ch.idx += 2;
         tick_ms_ = t;
         last_tick_ = _timer.millis();
         MDEBUG_PRINTF("TEMPO→%ums\n", t);
-        processCommand(i);
-        return;
-    }
-    
-    if (cmd == 0xDC) {
+        keepGoing = true;
+        continue;
+      }
+  
+      // volume change (0xDC): 1-byte
+      if (cmd == 0xDC) {
         ch.volume = ch.data[ch.idx++];
         MDEBUG_PRINTF("VOL→%u\n", ch.volume);
-        processCommand(i);
-        return;
+        keepGoing = true;
+        continue;
+      }
+  
+      // any other multi-byte skip
+      uint8_t sz = command_sizes_[cmd];
+      if (sz > 1) {
+        MDEBUG_PRINTF("SKIP %u\n", sz - 1);
+        ch.idx += sz - 1;
+      }
+      // and loop to catch next meta‐command or note
+      keepGoing = true;
     }
-    
-    if (cmd == 0xFF || cmd == 0xEA) {
-        processCommand(i);
-        return;
-    }
-    
-    uint8_t s = command_sizes_[cmd];
-    MDEBUG_PRINTF("SKIP %u\n", s - 1);
-    if (s > 1) ch.idx += s - 1;
-    processCommand(i);
-}
+  }
+  
 
 void MusicPlayer::silenceChannel(int channel) {
     ledcWriteTone(ledc_channels_[channel], 0);
