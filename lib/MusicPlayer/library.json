@@ -1,0 +1,11 @@
+{
+    "name": "MusicPlayer",
+    "version": "1.0.0",
+    "description": "Game Boy-style music player for ESP32",
+    "keywords": "esp32, music, gameboy, audio",
+    "authors": {
+        "name": "Your Name"
+    },
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+}
