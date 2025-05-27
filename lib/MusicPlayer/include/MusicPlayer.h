@@ -4,6 +4,7 @@
 #define MUSIC_PLAYER_H
 
 #include <Arduino.h>
+#include "MusicTimer.h"
 #include "DebugLog.h"
 
 class MusicPlayer {
@@ -55,6 +56,9 @@ private:
         uint8_t volume;
         int ticks_left;
     };
+
+    // Global timer
+    MusicTimer _timer;
     
     // Hardware configuration
     int buzzer_pins_[3];

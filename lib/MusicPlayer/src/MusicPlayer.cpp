@@ -29,6 +29,7 @@ void MusicPlayer::begin() {
         ledcAttachPin(buzzer_pins_[i], ledc_channels_[i]);
         silenceChannel(i);
     }
+    _timer.begin();
 }
 
 void MusicPlayer::play(const uint8_t* ch1_data, const uint8_t* ch2_data, const uint8_t* ch3_data) {
@@ -40,7 +41,7 @@ void MusicPlayer::play(const uint8_t* ch1_data, const uint8_t* ch2_data, const u
     }
     
     playing_ = true;
-    last_tick_ = millis();
+    last_tick_ = _timer.millis();
     tick_count_ = 0;
     MDEBUG_PRINTLN("MusicPlayer: Started playing");
 }
@@ -62,7 +63,7 @@ bool MusicPlayer::isPlaying() const {
 void MusicPlayer::update() {
     if (!playing_) return;
     
-    unsigned long now = millis();
+    unsigned long now = _timer.millis();
     if (now - last_tick_ < tick_ms_) return;
     
     last_tick_ = now;
@@ -158,7 +159,7 @@ void MusicPlayer::processCommand(int i) {
         uint16_t t = (uint16_t(ch.data[ch.idx]) << 8) | ch.data[ch.idx + 1];
         ch.idx += 2;
         tick_ms_ = t;
-        last_tick_ = millis();
+        last_tick_ = _timer.millis();
         MDEBUG_PRINTF("TEMPO→%ums\n", t);
         processCommand(i);
         return;
