@@ -42,7 +42,7 @@ void MusicPlayer::play(const uint8_t* ch1_data, const uint8_t* ch2_data, const u
     playing_ = true;
     last_tick_ = millis();
     tick_count_ = 0;
-    Serial.println("MusicPlayer: Started playing");
+    MDEBUG_PRINTLN("MusicPlayer: Started playing");
 }
 
 void MusicPlayer::stop() {
@@ -52,7 +52,7 @@ void MusicPlayer::stop() {
         silenceChannel(i);
     }
     
-    Serial.println("MusicPlayer: Stopped");
+    MDEBUG_PRINTLN("MusicPlayer: Stopped");
 }
 
 bool MusicPlayer::isPlaying() const {
@@ -67,18 +67,18 @@ void MusicPlayer::update() {
     
     last_tick_ = now;
     tick_count_++;
-    Serial.printf("MusicPlayer: Tick #%lu @%lums\n", tick_count_, now);
+    MDEBUG_PRINTF("MusicPlayer: Tick #%lu @%lums\n", tick_count_, now);
     
     for (int i = 0; i < 3; i++) {
         auto& ch = channels_[i];
-        Serial.printf("PreCh%d tl=%d idx=%u\n", i+1, ch.ticks_left, ch.idx);
+        MDEBUG_PRINTF("PreCh%d tl=%d idx=%u\n", i+1, ch.ticks_left, ch.idx);
         
         if (ch.ticks_left > 0) {
             ch.ticks_left--;
-            Serial.printf(" dec→%d\n", ch.ticks_left);
+            MDEBUG_PRINTF(" dec→%d\n", ch.ticks_left);
             
             if (ch.ticks_left == 0) {
-                Serial.printf("Ch%d REST end: silencing\n", i+1);
+                MDEBUG_PRINTF("Ch%d REST end: silencing\n", i+1);
                 silenceChannel(i);
             }
             
@@ -125,11 +125,11 @@ void MusicPlayer::processCommand(int i) {
     // Handle loop commands first to avoid advancing idx
     if (ch.data[ch.idx] == 0xFF || ch.data[ch.idx] == 0xEA) {
         ch.idx = 0;
-        Serial.printf("Ch%d LOOP\n", i+1);
+        MDEBUG_PRINTF("Ch%d LOOP\n", i+1);
     }
     
     uint8_t cmd = ch.data[ch.idx++];
-    Serial.printf("Ch%d cmd=0x%02X idx=%u ", i+1, cmd, ch.idx-1);
+    MDEBUG_PRINTF("Ch%d cmd=0x%02X idx=%u ", i+1, cmd, ch.idx-1);
 
     if (cmd <= 0xCF) {
         uint8_t p = cmd >> 4, L = cmd & 0xF;
@@ -137,10 +137,10 @@ void MusicPlayer::processCommand(int i) {
         float f = getFreq(p, ch.octave);
         
         if (p == 0) {
-            Serial.printf("REST len=%u\n", L);
+            MDEBUG_PRINTF("REST len=%u\n", L);
             silenceChannel(i);
         } else {
-            Serial.printf("NOTE p=%u len=%u f=%.1fHz\n", p, L, f);
+            MDEBUG_PRINTF("NOTE p=%u len=%u f=%.1fHz\n", p, L, f);
             ledcWriteTone(ledc_channels_[i], uint32_t(f + 0.5f));
             ledcWrite(ledc_channels_[i], ch.volume);
         }
@@ -149,7 +149,7 @@ void MusicPlayer::processCommand(int i) {
     
     if ((cmd & 0xF8) == 0xD0) {
         ch.octave = 0xD7 - cmd;
-        Serial.printf("OCT→%u\n", ch.octave);
+        MDEBUG_PRINTF("OCT→%u\n", ch.octave);
         processCommand(i);
         return;
     }
@@ -159,14 +159,14 @@ void MusicPlayer::processCommand(int i) {
         ch.idx += 2;
         tick_ms_ = t;
         last_tick_ = millis();
-        Serial.printf("TEMPO→%ums\n", t);
+        MDEBUG_PRINTF("TEMPO→%ums\n", t);
         processCommand(i);
         return;
     }
     
     if (cmd == 0xDC) {
         ch.volume = ch.data[ch.idx++];
-        Serial.printf("VOL→%u\n", ch.volume);
+        MDEBUG_PRINTF("VOL→%u\n", ch.volume);
         processCommand(i);
         return;
     }
@@ -177,7 +177,7 @@ void MusicPlayer::processCommand(int i) {
     }
     
     uint8_t s = command_sizes_[cmd];
-    Serial.printf("SKIP %u\n", s - 1);
+    MDEBUG_PRINTF("SKIP %u\n", s - 1);
     if (s > 1) ch.idx += s - 1;
     processCommand(i);
 }

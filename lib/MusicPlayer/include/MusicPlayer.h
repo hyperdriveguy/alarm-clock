@@ -4,6 +4,7 @@
 #define MUSIC_PLAYER_H
 
 #include <Arduino.h>
+#include "DebugLog.h"
 
 class MusicPlayer {
 public:
