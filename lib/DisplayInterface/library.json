@@ -1,8 +1,8 @@
 {
-    "name": "MusicPlayer",
+    "name": "DisplayInterface",
     "version": "1.0.0",
-    "description": "Game Boy-style music player for ESP32",
-    "keywords": "esp32, music, gameboy, audio",
+    "description": "12x2 LCD display interface for ESP32",
+    "keywords": "esp32, lcd, characters, pwm",
     "authors": {
         "name": "Carson Bush"
     },
