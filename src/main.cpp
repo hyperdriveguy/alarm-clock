@@ -58,11 +58,6 @@ void setup() {
     
     // display.showMessage("Booting...", "Please wait");
     // delay(2000);
-  
-    // display.showTime("12:34");
-    // display.showDate("2025-05-27");
-  
-    // delay(3000);
     // display.setBrightness(64);  // Dim the backlight
     // display.showMessage("Quote:", "Keep it simple.");
 
