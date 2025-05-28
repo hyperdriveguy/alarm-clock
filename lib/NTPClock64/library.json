@@ -1,0 +1,11 @@
+{
+    "name": "NTPClock64",
+    "version": "1.0.0",
+    "description": "64-bit NTP time sync with auto-DST",
+    "keywords": "esp32, time, ntp",
+    "authors": {
+        "name": "Carson Bush"
+    },
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+}
