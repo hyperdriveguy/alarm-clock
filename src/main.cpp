@@ -6,8 +6,11 @@
 #include "AlarmInterface.h"
 #include "song/somebody.h"
 
-static const char* WIFI_SSID     = "optix_legacy";
-static const char* WIFI_PASSWORD = "onmyhonor";
+// static const char* WIFI_SSID     = "optix_legacy";
+// static const char* WIFI_PASSWORD = "onmyhonor";
+
+static const char* WIFI_SSID     = "BYUI_Visitor";
+static const char* WIFI_PASSWORD = "";
 
 // POSIX TZ for US Mountain (auto-DST)
 static const char* POSIX_TZ = "MST7MDT,M3.2.0/2,M11.1.0/2";
