@@ -32,7 +32,7 @@ void NTPClock64::begin() {
 }
 
 void NTPClock64::sync() {
-  configTime(0, 0, ntpServer_);
+  configTzTime(tz_, ntpServer_);
   lastSync_ = millis() / 1000;
 }
 
