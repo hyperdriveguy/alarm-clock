@@ -18,7 +18,7 @@ class DisplayInterface {
  * It will be deleted internally after the next update.
  */
 
-  void DisplayInterface::showTime(const ClockDateTime* time_struct);
+  void showTime(const ClockDateTime* time_struct);
   
   void showMessage(const String& line1, const String& line2 = "");
 
