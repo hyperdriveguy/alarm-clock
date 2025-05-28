@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <USBCDC.h>
+
 #include <ntp_clock64.h>
 #include <MusicPlayer.h>
 #include <DisplayInterface.h>
@@ -6,8 +8,11 @@
 #include "AlarmInterface.h"
 #include "song/somebody.h"
 
-static const char* WIFI_SSID     = "optix_legacy";
-static const char* WIFI_PASSWORD = "onmyhonor";
+// static const char* WIFI_SSID     = "optix_legacy";
+// static const char* WIFI_PASSWORD = "onmyhonor";
+
+static const char* WIFI_SSID     = "BYUI_Visitor";
+static const char* WIFI_PASSWORD = "";
 
 // POSIX TZ for US Mountain (auto-DST)
 static const char* POSIX_TZ = "MST7MDT,M3.2.0/2,M11.1.0/2";
@@ -32,9 +37,11 @@ static constexpr int SNOOZE_THRESHOLD_HIGH = 200;
 static constexpr int DISMISS_THRESHOLD_LOW = 300;   // Adjust for your dismiss button
 static constexpr int DISMISS_THRESHOLD_HIGH = 600;  // Adjust for your dismiss button
 
+USBCDC SerialUSB;
+
 MusicPlayer player(BUZZER_PINS, LEDC_CH, LEDC_TIMER, LEDC_RES_BITS);
 AlarmManager alarmManager;
-AlarmInterface alarmInterface(alarmManager);
+AlarmInterface alarmInterface(alarmManager, SerialUSB);
 
 TaskHandle_t playerTaskHandle = nullptr;
 TaskHandle_t alarmTaskHandle = nullptr;
@@ -150,47 +157,44 @@ void setupExampleAlarms() {
     alarmManager.addAlarm(18, 0, DayMask::DAILY);
 }
 
-void setup() {
-    Serial.begin(115200);
-    while (!Serial) { delay(1); }
 
-    // Setup ADC for button reading
-    analogReadResolution(12);  // 12-bit ADC resolution (0-4095)
-    
+void setup() {
+    // Start Serial at 115200 baud; do NOT block waiting for a host
+    SerialUSB.begin(115200);
+    // Optional on ESP32 to mirror debug output to UART0
+    SerialUSB.setDebugOutput(true);
+
+    // Allow a brief pause so you can open the monitor immediately
+    delay(100);
+
+    // ADC setup for buttons
+    analogReadResolution(12);
+
     player.begin();
 
-    // Create player task (starts suspended)
+    // Create & suspend the player task
     xTaskCreatePinnedToCore(
-        playerUpdateTask,
-        "PlayerUpdateTask",
-        4096,
-        nullptr,
-        1,
-        &playerTaskHandle,
-        1
+        playerUpdateTask, "PlayerUpdateTask",
+        4096, nullptr, 1, &playerTaskHandle, 1
     );
     vTaskSuspend(playerTaskHandle);
-    
+
     // Create alarm task
     xTaskCreatePinnedToCore(
-        alarmTask,
-        "AlarmTask", 
-        4096,
-        nullptr,
-        2, // Higher priority than player
-        &alarmTaskHandle,
-        0
+        alarmTask, "AlarmTask",
+        4096, nullptr, 2, &alarmTaskHandle, 0
     );
 
     rtclock.begin();
     display.begin();
-    
-    // Setup example alarms
+
     setupExampleAlarms();
-    
+
     display.showMessage("Clock Ready", "Alarms set");
     delay(2000);
     display.setBrightness(64);
+
+    // Now you should see “Clock Ready…” in your serial monitor immediately
 }
 
 void loop() {
