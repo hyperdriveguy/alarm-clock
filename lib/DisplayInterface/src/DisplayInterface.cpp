@@ -23,14 +23,36 @@ void DisplayInterface::setBrightness(uint8_t level) {
   ledcWrite(3, level);
 }
 
-void DisplayInterface::showTime(const String& timeStr) {
-  lcd.setCursor(0, 0);
-  lcd.print("Time: " + timeStr);
-}
+void DisplayInterface::showTime(const ClockDateTime* time_struct) {
+  // Initial full draw
+  if (prev_time_struct == nullptr) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.printf("%02d:%02d:%02d",
+               time_struct->hour,
+               time_struct->minute,
+               time_struct->second);
+    lcd.setCursor(0, 1);
+    lcd.printf("%04d-%02d-%02d",
+               time_struct->year,
+               time_struct->month,
+               time_struct->day);
+    prev_time_struct = time_struct;  // take ownership
+    return;
+  }
 
-void DisplayInterface::showDate(const String& dateStr) {
-  lcd.setCursor(0, 1);
-  lcd.print("Date: " + dateStr);
+  // Update only changed fields
+  if (time_struct->hour   != prev_time_struct->hour)   { lcd.setCursor(0, 0); lcd.printf("%02d", time_struct->hour); }
+  if (time_struct->minute != prev_time_struct->minute) { lcd.setCursor(3, 0); lcd.printf("%02d", time_struct->minute); }
+  if (time_struct->second != prev_time_struct->second) { lcd.setCursor(6, 0); lcd.printf("%02d", time_struct->second); }
+
+  if (time_struct->year  != prev_time_struct->year)  { lcd.setCursor(0, 1); lcd.printf("%04d", time_struct->year); }
+  if (time_struct->month != prev_time_struct->month) { lcd.setCursor(5, 1); lcd.printf("%02d", time_struct->month); }
+  if (time_struct->day   != prev_time_struct->day)   { lcd.setCursor(8, 1); lcd.printf("%02d", time_struct->day); }
+
+  // Swap pointers and delete old buffer
+  delete prev_time_struct;
+  prev_time_struct = time_struct;
 }
 
 void DisplayInterface::showMessage(const String& line1, const String& line2) {

@@ -21,9 +21,7 @@ void NTPClock64::begin() {
   }
 
   // 2) Set TZ and do initial SNTP
-  setenv("TZ", tz_, 1);
-  tzset();
-  configTime(0, 0, ntpServer_);
+  configTzTime(tz_, ntpServer_);
   
   // 3) Wait for valid time
   struct tm tm;
@@ -73,3 +71,20 @@ String NTPClock64::nowString() const {
            tm.tm_sec);
   return String(buf);
 }
+
+ClockDateTime NTPClock64::nowSplit() const {
+  struct tm tm;
+  if (!getLocalTime(&tm)) {
+    return {0};  // fallback on failure
+  }
+
+  return {
+    tm.tm_year + 1900,
+    tm.tm_mon + 1,
+    tm.tm_mday,
+    tm.tm_hour,
+    tm.tm_min,
+    tm.tm_sec
+  };
+}
+

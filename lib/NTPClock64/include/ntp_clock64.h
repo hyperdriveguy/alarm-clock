@@ -5,6 +5,15 @@
 #include <WiFi.h>
 #include <time.h>
 
+struct ClockDateTime {
+  int year;
+  int month;   // 1–12
+  int day;     // 1–31
+  int hour;    // 0–23
+  int minute;  // 0–59
+  int second;  // 0–59
+};
+
 /**
  * @class NTPClock64
  * @brief 64-bit NTP clock with auto-DST and periodic re-sync.
@@ -46,6 +55,8 @@ class NTPClock64 {
 
   /** @brief Formatted "YYYY-MM-DD HH:MM:SS" in local time. */
   String nowString() const;
+
+  ClockDateTime nowSplit() const;
 
  private:
   const char* ssid_;
