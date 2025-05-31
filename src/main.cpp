@@ -21,7 +21,7 @@ NTPClock64 rtclock(WIFI_SSID, WIFI_PASSWORD, POSIX_TZ, "pool.ntp.org", 3600);
 // Create display instance with default pins and settings
 DisplayInterface display;
 
-static constexpr int BUZZER_PINS[3] = { 40, 41, 42 };
+static constexpr int BUZZER_PINS[3] = { 40, 16, 21 };
 static constexpr int LEDC_CH[3] = { 0, 1, 2 };
 static constexpr int LEDC_TIMER = 0;
 static constexpr int LEDC_RES_BITS = 8;
@@ -150,7 +150,7 @@ void setupExampleAlarms() {
     alarmManager.addAlarm(9, 0, DayMask::WEEKEND);
     
     // Daily reminder at 6:00 PM
-    alarmManager.addAlarm(18, 0, DayMask::DAILY);
+    alarmManager.addAlarm(16, 1, DayMask::DAILY);
 }
 
 void setup() {
