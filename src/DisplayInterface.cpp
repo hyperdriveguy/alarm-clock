@@ -1,64 +1,149 @@
 #include "DisplayInterface.h"
-#include <Wire.h>
 
-DisplayInterface::DisplayInterface(uint8_t i2c_addr, uint8_t cols, uint8_t rows,
-                                   uint8_t sda, uint8_t scl, uint8_t backlight_pin)
-    : lcd(i2c_addr, cols, rows),
+DisplayInterface::DisplayInterface(Adafruit_ILI9341* tft_display, Adafruit_FT6206* touch_controller,
+                                   uint8_t backlight_pin)
+    : tft(tft_display),
+      touchController(touch_controller),
       backlightPin(backlight_pin),
-      sdaPin(sda),             // store custom SDA pin
-      sclPin(scl) {            // store custom SCL pin
+      backlightChannel(7),  // Use channel 7 for backlight PWM
+      prev_time_struct(nullptr) {
 }
 
 void DisplayInterface::begin() {
-  Wire.begin(sdaPin, sclPin); // Initialize I2C with custom SDA/SCL pins
-  lcd.init();
-  lcd.backlight();
-  const uint8_t backlightPWMChannel = 3;
-  ledcAttachPin(backlightPin, backlightPWMChannel);
-  ledcSetup(backlightPWMChannel, 5000, 8);
-  ledcWrite(backlightPWMChannel, 255);
+    // Initialize TFT display
+    tft->begin();
+    tft->setRotation(3);  // Landscape orientation (320x240)
+    tft->fillScreen(BLACK);
+    
+    // Initialize touch controller
+    if (!touchController->begin(40)) {  // Pass in sensitivity coefficient
+        Serial.println("Touch controller initialization failed!");
+    }
+    
+    // Setup backlight PWM
+    ledcSetup(backlightChannel, 5000, 8);  // 5kHz frequency, 8-bit resolution
+    ledcAttachPin(backlightPin, backlightChannel);
+    ledcWrite(backlightChannel, 255);  // Full brightness initially
+    
+    // Display startup message
+    tft->setTextColor(WHITE);
+    tft->setTextSize(2);
+    drawCenteredText("Display Ready", SCREEN_HEIGHT/2);
 }
 
 void DisplayInterface::setBrightness(uint8_t level) {
-  ledcWrite(3, level);
+    ledcWrite(backlightChannel, level);
 }
 
 void DisplayInterface::showTime(const ClockDateTime* time_struct) {
-  // Initial full draw
-  if (prev_time_struct == nullptr) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.printf("%02d:%02d:%02d",
-               time_struct->hour,
-               time_struct->minute,
-               time_struct->second);
-    lcd.setCursor(0, 1);
-    lcd.printf("%04d-%02d-%02d",
-               time_struct->year,
-               time_struct->month,
-               time_struct->day);
-    prev_time_struct = time_struct;  // take ownership
-    return;
-  }
+    // Initial full draw
+    if (prev_time_struct == nullptr) {
+        clearScreen();
+        
+        // Draw time (HH:MM:SS)
+        tft->setTextSize(4);
+        tft->setTextColor(CYAN);
+        String timeStr = String(time_struct->hour < 10 ? "0" : "") + String(time_struct->hour) + ":" +
+                        String(time_struct->minute < 10 ? "0" : "") + String(time_struct->minute) + ":" +
+                        String(time_struct->second < 10 ? "0" : "") + String(time_struct->second);
+        drawCenteredText(timeStr, TIME_Y, CYAN, 4);
+        
+        // Draw date (YYYY-MM-DD)
+        tft->setTextSize(2);
+        tft->setTextColor(YELLOW);
+        String dateStr = String(time_struct->year) + "-" +
+                        String(time_struct->month < 10 ? "0" : "") + String(time_struct->month) + "-" +
+                        String(time_struct->day < 10 ? "0" : "") + String(time_struct->day);
+        drawCenteredText(dateStr, DATE_Y, YELLOW, 2);
+        
+        prev_time_struct = time_struct;
+        return;
+    }
 
-  // Update only changed fields
-  if (time_struct->hour   != prev_time_struct->hour)   { lcd.setCursor(0, 0); lcd.printf("%02d", time_struct->hour); }
-  if (time_struct->minute != prev_time_struct->minute) { lcd.setCursor(3, 0); lcd.printf("%02d", time_struct->minute); }
-  if (time_struct->second != prev_time_struct->second) { lcd.setCursor(6, 0); lcd.printf("%02d", time_struct->second); }
+    // Update only changed fields for efficiency
+    updateTimeDisplay(time_struct, prev_time_struct);
+    
+    // Clean up previous time struct and store new one
+    delete prev_time_struct;
+    prev_time_struct = time_struct;
+}
 
-  if (time_struct->year  != prev_time_struct->year)  { lcd.setCursor(0, 1); lcd.printf("%04d", time_struct->year); }
-  if (time_struct->month != prev_time_struct->month) { lcd.setCursor(5, 1); lcd.printf("%02d", time_struct->month); }
-  if (time_struct->day   != prev_time_struct->day)   { lcd.setCursor(8, 1); lcd.printf("%02d", time_struct->day); }
-
-  // Swap pointers and delete old buffer
-  delete prev_time_struct;
-  prev_time_struct = time_struct;
+void DisplayInterface::updateTimeDisplay(const ClockDateTime* current, const ClockDateTime* previous) {
+    tft->setTextSize(4);
+    
+    // Update time if any component changed
+    if (current->hour != previous->hour || current->minute != previous->minute || current->second != previous->second) {
+        // Clear the time area
+        tft->fillRect(0, TIME_Y - 20, SCREEN_WIDTH, 40, BLACK);
+        
+        // Redraw time
+        tft->setTextColor(CYAN);
+        String timeStr = String(current->hour < 10 ? "0" : "") + String(current->hour) + ":" +
+                        String(current->minute < 10 ? "0" : "") + String(current->minute) + ":" +
+                        String(current->second < 10 ? "0" : "") + String(current->second);
+        drawCenteredText(timeStr, TIME_Y, CYAN, 4);
+    }
+    
+    // Update date if any component changed
+    if (current->year != previous->year || current->month != previous->month || current->day != previous->day) {
+        // Clear the date area
+        tft->fillRect(0, DATE_Y - 10, SCREEN_WIDTH, 25, BLACK);
+        
+        // Redraw date
+        tft->setTextSize(2);
+        tft->setTextColor(YELLOW);
+        String dateStr = String(current->year) + "-" +
+                        String(current->month < 10 ? "0" : "") + String(current->month) + "-" +
+                        String(current->day < 10 ? "0" : "") + String(current->day);
+        drawCenteredText(dateStr, DATE_Y, YELLOW, 2);
+    }
 }
 
 void DisplayInterface::showMessage(const String& line1, const String& line2) {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print(line1);
-  lcd.setCursor(0, 1);
-  lcd.print(line2);
+    clearScreen();
+    
+    // Show first line
+    tft->setTextSize(3);
+    tft->setTextColor(WHITE);
+    drawCenteredText(line1, MESSAGE_LINE1_Y, WHITE, 3);
+    
+    // Show second line if provided
+    if (line2.length() > 0) {
+        tft->setTextSize(2);
+        tft->setTextColor(GRAY);
+        drawCenteredText(line2, MESSAGE_LINE2_Y, GRAY, 2);
+    }
+}
+
+bool DisplayInterface::isTouched() {
+    return touchController->touched();
+}
+
+void DisplayInterface::getTouchPoint(uint16_t* x, uint16_t* y) {
+    TS_Point p = touchController->getPoint();
+    
+    // Map touch coordinates to screen coordinates
+    // The touch controller may need calibration depending on orientation
+    *x = map(p.x, 0, 320, 0, SCREEN_WIDTH);
+    *y = map(p.y, 0, 240, 0, SCREEN_HEIGHT);
+}
+
+void DisplayInterface::clearScreen() {
+    tft->fillScreen(BLACK);
+}
+
+void DisplayInterface::drawCenteredText(const String& text, int16_t y, uint16_t color, uint8_t textSize) {
+    tft->setTextSize(textSize);
+    tft->setTextColor(color);
+    
+    // Calculate text bounds
+    int16_t x1, y1;
+    uint16_t w, h;
+    tft->getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+    
+    // Center horizontally
+    int16_t x = (SCREEN_WIDTH - w) / 2;
+    
+    tft->setCursor(x, y);
+    tft->print(text);
 }

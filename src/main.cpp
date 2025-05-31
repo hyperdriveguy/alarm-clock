@@ -1,39 +1,81 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ILI9341.h>
+#include <Adafruit_FT6206.h>
 #include <ntp_clock64.h>
 #include <MusicPlayer.h>
-#include <DisplayInterface.h>
+#include "DisplayInterface.h"
 #include "AlarmManager.h"
 #include "AlarmInterface.h"
 #include "song/somebody.h"
 
-// static const char* WIFI_SSID     = "optix_legacy";
-// static const char* WIFI_PASSWORD = "onmyhonor";
+// WiFi credentials
+static const char* WIFI_SSID     = "optix_legacy";
+static const char* WIFI_PASSWORD = "onmyhonor";
 
-static const char* WIFI_SSID     = "BYUI_Visitor";
-static const char* WIFI_PASSWORD = "";
+// static const char* WIFI_SSID     = "BYUI_Visitor";
+// static const char* WIFI_PASSWORD = "";
 
 // POSIX TZ for US Mountain (auto-DST)
 static const char* POSIX_TZ = "MST7MDT,M3.2.0/2,M11.1.0/2";
 
-// sync every hour
+// Pin definitions
+// I²C (Touch) pins
+static constexpr int8_t CTP_SDA_PIN = 1;
+static constexpr int8_t CTP_SCL_PIN = 2;
+static constexpr int8_t CTP_INT_PIN = 10;
+static constexpr int8_t CTP_RST_PIN = 13;
+
+// SPI pins for SD and LCD
+static constexpr int8_t SD_CS_PIN = 4;
+static constexpr int8_t SPI_MISO_PIN = 5; // SDO
+static constexpr int8_t SPI_SCK_PIN = 6; // SCK
+static constexpr int8_t SPI_MOSI_PIN = 7; // SDI
+
+// LCD control pins (via SPI)
+static constexpr int8_t LCD_RS_PIN = 8; // D/C
+static constexpr int8_t LCD_RST_PIN = 14; // Reset
+static constexpr int8_t LCD_CS_PIN = 18; // Chip-Select
+static constexpr int8_t LED_PIN = 9; // Backlight (PWM-capable)
+
+// PWM Piezo Buzzer pins
+static constexpr int8_t BUZZER1_PIN = 40;
+static constexpr int8_t BUZZER2_PIN = 16;
+static constexpr int8_t BUZZER3_PIN = 17; // Shorted (oopsie) so no sound (do not use)
+static constexpr int8_t BUZZER4_PIN = 21;
+
+// External Switch pins
+static constexpr int8_t SWITCH_A_PIN = 11; // No internal pull-up
+static constexpr int8_t SWITCH_B_PIN = 12; // External pull-up
+static constexpr int8_t SWITCH_C_PIN = 35; // External pull-up
+static constexpr int8_t SWITCH_D_PIN = 36; // External pull-up
+static constexpr int8_t SWITCH_E_PIN = 37; // External pull-up
+static constexpr int8_t SWITCH_F_PIN = 38; // External pull-up
+static constexpr int8_t SWITCH_G_PIN = 39; // External pull-up
+
+// LEDC (PWM) channels for buzzers and backlight
+static constexpr int8_t BUZZER1_CH = 3;
+static constexpr int8_t BUZZER2_CH = 4;
+static constexpr int8_t BUZZER3_CH = 5;
+static constexpr int8_t BUZZER4_CH = 6;
+static constexpr int8_t BACKLIGHT_CH = 7; // Use channel 7 to avoid conflicts
+
+// NTP Clock setup - sync every hour
 NTPClock64 rtclock(WIFI_SSID, WIFI_PASSWORD, POSIX_TZ, "pool.ntp.org", 3600);
 
-// Create display instance with default pins and settings
-DisplayInterface display;
+// Display and touch instances
+Adafruit_ILI9341 tft = Adafruit_ILI9341(LCD_CS_PIN, LCD_RS_PIN, LCD_RST_PIN);
+Adafruit_FT6206 touch = Adafruit_FT6206();
+DisplayInterface display(&tft, &touch, LED_PIN);
 
-static constexpr int BUZZER_PINS[3] = { 40, 16, 21 };
-static constexpr int LEDC_CH[3] = { 0, 1, 2 };
+// Music player with updated buzzer pins
+static constexpr int BUZZER_PINS[3] = { BUZZER1_PIN, BUZZER2_PIN, BUZZER4_PIN };
+static constexpr int LEDC_CH[3] = { BUZZER1_CH, BUZZER2_CH, BUZZER4_CH };
 static constexpr int LEDC_TIMER = 0;
 static constexpr int LEDC_RES_BITS = 8;
-
-// ADC pin for resistor ladder buttons
-static constexpr int BUTTON_ADC_PIN = 7;
-
-// ADC thresholds for button detection (adjust based on your ladder)
-static constexpr int SNOOZE_THRESHOLD_LOW = 0;
-static constexpr int SNOOZE_THRESHOLD_HIGH = 200;
-static constexpr int DISMISS_THRESHOLD_LOW = 300;   // Adjust for your dismiss button
-static constexpr int DISMISS_THRESHOLD_HIGH = 600;  // Adjust for your dismiss button
 
 MusicPlayer player(BUZZER_PINS, LEDC_CH, LEDC_TIMER, LEDC_RES_BITS);
 AlarmManager alarmManager;
@@ -64,7 +106,7 @@ void alarmTask(void *param) {
                     alarmRinging = true;
                     vTaskResume(playerTaskHandle);
                     player.play(SomebodyCh1, SomebodyCh2, SomebodyCh3);
-                    display.showMessage("ALARM!", "Press button");
+                    display.showMessage("ALARM!", "Touch to snooze/dismiss");
                 }
                 break;
                 
@@ -90,16 +132,31 @@ enum class ButtonType {
     DISMISS
 };
 
-ButtonType readButtonFromADC() {
-    int adcValue = analogRead(BUTTON_ADC_PIN);
-    
-    if (adcValue >= SNOOZE_THRESHOLD_LOW && adcValue <= SNOOZE_THRESHOLD_HIGH) {
+ButtonType readButtonFromSwitches() {
+    // Check physical switches for button input
+    if (digitalRead(SWITCH_B_PIN) == LOW) {
         return ButtonType::SNOOZE;
-    } else if (adcValue >= DISMISS_THRESHOLD_LOW && adcValue <= DISMISS_THRESHOLD_HIGH) {
+    } else if (digitalRead(SWITCH_C_PIN) == LOW) {
         return ButtonType::DISMISS;
     }
     
     return ButtonType::NONE;
+}
+
+ButtonType readButtonFromTouch() {
+    if (!display.isTouched()) {
+        return ButtonType::NONE;
+    }
+    
+    uint16_t x, y;
+    display.getTouchPoint(&x, &y);
+    
+    // Simple touch zones: left half = snooze, right half = dismiss
+    if (x < 160) {
+        return ButtonType::SNOOZE;
+    } else {
+        return ButtonType::DISMISS;
+    }
 }
 
 void handleButtonPress() {
@@ -110,7 +167,12 @@ void handleButtonPress() {
         return;
     }
     
-    ButtonType button = readButtonFromADC();
+    // Check both physical switches and touch input
+    ButtonType button = readButtonFromSwitches();
+    if (button == ButtonType::NONE) {
+        button = readButtonFromTouch();
+    }
+    
     if (button == ButtonType::NONE) {
         return;
     }
@@ -138,10 +200,6 @@ void handleButtonPress() {
     }
 }
 
-void IRAM_ATTR buttonCheckISR() {
-    handleButtonPress();
-}
-
 void setupExampleAlarms() {
     // Weekday alarm at 7:00 AM
     alarmManager.addAlarm(7, 0, DayMask::WEEKDAYS);
@@ -157,9 +215,34 @@ void setup() {
     Serial.begin(115200);
     while (!Serial) { delay(1); }
 
-    // Setup ADC for button reading
-    analogReadResolution(12);  // 12-bit ADC resolution (0-4095)
+    // Initialize SPI for display and SD card
+    SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
     
+    // Initialize I2C for touch controller
+    Wire.begin(CTP_SDA_PIN, CTP_SCL_PIN);
+    
+    // Touch reset sequence
+    pinMode(CTP_RST_PIN, OUTPUT);
+    digitalWrite(CTP_RST_PIN, HIGH);
+    delay(10);
+    digitalWrite(CTP_RST_PIN, LOW);
+    delay(10);
+    digitalWrite(CTP_RST_PIN, HIGH);
+    delay(10);
+    
+    // Touch interrupt pin
+    pinMode(CTP_INT_PIN, INPUT);
+    
+    // Configure external switches
+    pinMode(SWITCH_A_PIN, INPUT_PULLUP);
+    pinMode(SWITCH_B_PIN, INPUT); // External pull-up
+    pinMode(SWITCH_C_PIN, INPUT);
+    pinMode(SWITCH_D_PIN, INPUT);
+    pinMode(SWITCH_E_PIN, INPUT);
+    pinMode(SWITCH_F_PIN, INPUT);
+    pinMode(SWITCH_G_PIN, INPUT);
+    
+    // Initialize music player
     player.begin();
 
     // Create player task (starts suspended)
@@ -185,7 +268,10 @@ void setup() {
         0
     );
 
+    // Initialize clock and display
+    Serial.println("Initializing clock");
     rtclock.begin();
+    Serial.println("Initializing display");
     display.begin();
     
     // Setup example alarms
@@ -193,7 +279,7 @@ void setup() {
     
     display.showMessage("Clock Ready", "Alarms set");
     delay(2000);
-    display.setBrightness(64);
+    display.setBrightness(200);  // Set comfortable brightness level
 }
 
 void loop() {
@@ -203,7 +289,7 @@ void loop() {
     // Process alarm commands from serial
     alarmInterface.processCommands();
     
-    // Check for button presses (polling-based for ADC)
+    // Check for button presses (both physical switches and touch)
     handleButtonPress();
     
     // Show time normally, or alarm info if alarm is active
