@@ -24,7 +24,7 @@ class DisplayInterface {
   DisplayInterface(Adafruit_ILI9341* tft_display, Adafruit_FT6206* touch_controller, 
                    uint8_t backlight_pin = 9);
 
-  void begin();
+  void begin(uint32_t freq);
   void setBrightness(uint8_t level);  // 0–255
 
   /**

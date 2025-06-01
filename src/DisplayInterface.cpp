@@ -9,10 +9,11 @@ DisplayInterface::DisplayInterface(Adafruit_ILI9341* tft_display, Adafruit_FT620
       prev_time_struct(nullptr) {
 }
 
-void DisplayInterface::begin() {
+void DisplayInterface::begin(uint32_t freq) {
     // Initialize TFT display
-    tft->begin();
+    tft->begin(freq);
     tft->setRotation(3);  // Landscape orientation (320x240)
+    tft->invertDisplay(true);
     tft->fillScreen(BLACK);
     
     // Initialize touch controller
@@ -74,7 +75,7 @@ void DisplayInterface::updateTimeDisplay(const ClockDateTime* current, const Clo
     // Update time if any component changed
     if (current->hour != previous->hour || current->minute != previous->minute || current->second != previous->second) {
         // Clear the time area
-        tft->fillRect(0, TIME_Y - 20, SCREEN_WIDTH, 40, BLACK);
+        tft->fillRect(0, TIME_Y - 20, SCREEN_WIDTH, 50, BLACK);
         
         // Redraw time
         tft->setTextColor(CYAN);
