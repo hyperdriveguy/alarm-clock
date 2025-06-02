@@ -72,7 +72,7 @@ void DisplayInterface::updateTimeDisplay(const ClockDateTime* current, const Clo
     tft->setTextSize(4);
     
     // Update time if any component changed
-    if (current->hour != previous->hour || current->minute != previous->minute || current->second != previous->second) {
+    if (messageJustShown || current->hour != previous->hour || current->minute != previous->minute || current->second != previous->second) {
         // Clear the time area
         tft->fillRect(0, TIME_Y - 20, SCREEN_WIDTH, 50, BLACK);
         
@@ -85,7 +85,7 @@ void DisplayInterface::updateTimeDisplay(const ClockDateTime* current, const Clo
     }
     
     // Update date if any component changed
-    if (current->year != previous->year || current->month != previous->month || current->day != previous->day) {
+    if (messageJustShown || current->year != previous->year || current->month != previous->month || current->day != previous->day) {
         // Clear the date area
         tft->fillRect(0, DATE_Y - 10, SCREEN_WIDTH, 25, BLACK);
         
@@ -100,6 +100,7 @@ void DisplayInterface::updateTimeDisplay(const ClockDateTime* current, const Clo
 }
 
 void DisplayInterface::showMessage(const String& line1, const String& line2) {
+    messageJustShown = true;
     clearScreen();
     
     // Show first line

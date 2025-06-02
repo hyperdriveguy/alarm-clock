@@ -148,6 +148,10 @@ uint32_t AlarmManager::getMinutesSinceMidnight(const ClockDateTime& time) const 
     return time.hour * 60 + time.minute;
 }
 
+uint32_t AlarmManager::getSnoozeUntil() const {
+    return snoozeUntil_;
+}
+
 DayMask AlarmManager::getDayMask(int dayOfWeek) const {
     // dayOfWeek: 0=Sunday, 1=Monday, ..., 6=Saturday
     switch (dayOfWeek) {

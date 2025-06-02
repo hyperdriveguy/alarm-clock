@@ -45,6 +45,7 @@ class DisplayInterface {
   Adafruit_FT6206* touchController;
   uint8_t backlightPin;
   uint8_t backlightChannel;
+  bool messageJustShown = false;  // Track if a message was displayed
   
   // Replace dynamic allocation with an internal copy.
   ClockDateTime prev_time_struct;

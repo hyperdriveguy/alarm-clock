@@ -93,6 +93,7 @@ TaskHandle_t displayTaskHandle = nullptr;
 
 bool alarmRinging = false;
 bool ntpConnected = false;  // Track NTP connection status
+bool updateTimeScreen = true;
 unsigned long buttonDebounceTime = 0;
 static constexpr unsigned long DEBOUNCE_DELAY = 50;
 
@@ -107,10 +108,63 @@ IRAM_ATTR void handleDismissInterrupt() {
     buttonInterruptEvent = 2;
 }
 
+// NEW helper: alternate greeting based on time
+String getGreeting() {
+    ClockDateTime now = rtclock.nowSplit();
+    if(now.hour < 12) return "Good morning!";
+    else if(now.hour < 17) return "Good afternoon!";
+    else if(now.hour < 21) return "Good evening!";
+    else return "Good night!";
+}
+
+// NEW helper: adjust brightness and (optionally) color scheme based on time of day
+void adjustDisplaySettings() {
+    ClockDateTime now = rtclock.nowSplit();
+    if(now.hour >=7 && now.hour <19) {
+        display.setBrightness(255);
+    } else {
+        display.setBrightness(100);
+    }
+    // ...additional color scheme adjustments can be added here...
+}
+
 void playerUpdateTask(void *param) {
     while (true) {
         player.update();
         vTaskDelay(pdMS_TO_TICKS(1));
+    }
+}
+
+// NEW: Task to sync NTP periodically
+void ntpSyncTask(void* param) {
+    while (true) {
+        if(ntpConnected) {
+            rtclock.update();
+            Serial.println("NTP sync done.");
+        }
+        vTaskDelay(pdMS_TO_TICKS(3600000));  // every hour
+    }
+}
+
+// NEW: Task to handle interactive touchscreen menu
+void touchTask(void* param) {
+    while(true) {
+        if(display.isTouched()){
+            uint16_t x, y;
+            display.getTouchPoint(&x, &y);
+            Serial.printf("Touch at (%d, %d)\n", x, y);
+            // Check for lower right area touch (taking rotated display into account)
+            if(x > 200 && y < 45) {
+                updateTimeScreen = false;  // Disable time screen updates
+                display.showMessage("Settings", "Select WiFi");
+                delay(2000);
+                // ...insert interactive menu logic (e.g. list wifi networks)...
+                display.showMessage("Resuming", "");
+                delay(500);
+                updateTimeScreen = true;  // Re-enable time screen updates
+            }
+        }
+        vTaskDelay(pdMS_TO_TICKS(200));
     }
 }
 
@@ -157,7 +211,15 @@ void alarmTask(void *param) {
                 alarmRinging = true;
                 vTaskResume(playerTaskHandle);
                 player.play(Ch1, Ch2, Ch3);
-                display.showMessage("SNOOZE END", "Wake up!");
+                {
+                    // NEW: update countdown display using getSnoozeUntil() from AlarmManager.
+                    uint32_t currentMinutes = alarmManager.getMinutesSinceMidnight(currentTime);
+                    uint32_t snoozeUntil = alarmManager.getSnoozeUntil();
+                    uint32_t remaining = (snoozeUntil + (24*60) - currentMinutes) % (24*60);
+                    int mins = remaining;
+                    int secs = 0; // For simplicity, seconds are shown as 0.
+                    display.showMessage("SNOOZED", String("Countdown: ") + String(mins) + ":00");
+                }
                 break;
                 
             case AlarmEvent::NONE:
@@ -172,7 +234,7 @@ void alarmTask(void *param) {
 void displayTask(void* param) {
     while (true) {
         // Only update if no active alarm
-        if (!alarmRinging && !alarmManager.isAlarmActive()) {
+        if (updateTimeScreen && !alarmRinging && !alarmManager.isAlarmActive()) {
             ClockDateTime currentTime = rtclock.nowSplit();
             display.showTime(&currentTime);
         }
@@ -186,74 +248,29 @@ enum class ButtonType {
     DISMISS
 };
 
-ButtonType readButtonFromSwitches() {
-    // Check physical switches for button input
-    if (digitalRead(SWITCH_A_PIN) == LOW) {
-        return ButtonType::SNOOZE;
-    } else if (digitalRead(SWITCH_C_PIN) == LOW) {
-        return ButtonType::DISMISS;
-    }
-    
-    return ButtonType::NONE;
-}
-
-ButtonType readButtonFromTouch() {
-    if (!display.isTouched()) {
-        return ButtonType::NONE;
-    }
-    
-    uint16_t x, y;
-    display.getTouchPoint(&x, &y);
-    
-    // Simple touch zones: left half = snooze, right half = dismiss
-    if (x < 160) {
-        return ButtonType::SNOOZE;
-    } else {
-        return ButtonType::DISMISS;
-    }
-}
-
-// Modified handleButtonPress: process physical interrupts first then touch
+// Modified handleButtonPress: only physical interrupts are used for snooze/dismiss.
 void handleButtonPress() {
+    if (!alarmRinging) { // Only process button presses when an alarm is playing
+        buttonInterruptEvent = 0;
+        return;
+    }
     if(buttonInterruptEvent != 0) {
-        if (buttonInterruptEvent == 1) {
+        if (buttonInterruptEvent == 1) {  // Snooze (Switch A)
             alarmManager.snoozeAlarm();
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
-            display.showMessage("SNOOZED", "9 minutes");
-        } else if (buttonInterruptEvent == 2) {
+            display.showMessage("SNOOZED", "Countdown: 9:00");
+        } else if (buttonInterruptEvent == 2) {  // Dismiss (Switch C)
             alarmManager.dismissAlarm();
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
-            display.showMessage("DISMISSED", "Good morning!");
+            display.showMessage(getGreeting(), "");
         }
-        buttonInterruptEvent = 0;  // clear the flag
-        delay(2000);  // allow message to be visible
-        return;
-    }
-    
-    // Process touch input if no physical interrupt event
-    ButtonType button = readButtonFromTouch();
-    if (button == ButtonType::NONE) {
-        return;
-    }
-    
-    if (button == ButtonType::SNOOZE) {
-        alarmManager.snoozeAlarm();
-        player.stop();
-        vTaskSuspend(playerTaskHandle);
-        alarmRinging = false;
-        display.showMessage("SNOOZED", "9 minutes");
+        buttonInterruptEvent = 0;  // clear flag
         delay(2000);
-    } else if (button == ButtonType::DISMISS) {
-        alarmManager.dismissAlarm();
-        player.stop();
-        vTaskSuspend(playerTaskHandle);
-        alarmRinging = false;
-        display.showMessage("DISMISSED", "Good morning!");
-        delay(2000);
+        return;
     }
 }
 
@@ -338,6 +355,25 @@ void initializeTasks() {
         &displayTaskHandle,
         1
     );
+    // NEW: Create tasks for NTP sync and touchscreen menu handling.
+    xTaskCreatePinnedToCore(
+        ntpSyncTask,
+        "NTPSyncTask",
+        4096,
+        nullptr,
+        1,
+        nullptr,
+        0
+    );
+    xTaskCreatePinnedToCore(
+        touchTask,
+        "TouchTask",
+        4096,
+        nullptr,
+        1,
+        nullptr,
+        1
+    );
     display.showMessage("Tasks Created", "Initializing clock");
     delay(500);
 }
@@ -366,8 +402,15 @@ void setup() {
 }
 
 void loop() {
-    rtclock.update();
+    // Removed NTP clock update from loop; NTP sync happens in ntpSyncTask.
     alarmInterface.processCommands();
     handleButtonPress();
+    
+    // Adjust brightness and colors based on time (or overridden via Switch B).
+    adjustDisplaySettings();
+    if(digitalRead(SWITCH_B_PIN) == LOW) {  // Physical override for brightness.
+        display.setBrightness(255);
+    }
+    
     delay(100);
 }

@@ -113,6 +113,18 @@ public:
      * @brief Get number of configured alarms
      */
     int getAlarmCount() const { return alarmCount_; }
+    
+    /**
+     * @brief Get the snooze until time (in minutes since midnight).
+     */
+    uint32_t getSnoozeUntil() const;
+
+    /**
+     * @brief Helper to get minutes from a ClockDateTime.
+     * @param time ClockDateTime object
+     * @return Minutes since midnight
+     */
+    uint32_t getMinutesSinceMidnight(const ClockDateTime& time) const;
 
 private:
     Alarm alarms_[MAX_ALARMS];
@@ -123,7 +135,6 @@ private:
     
     bool shouldTrigger(const Alarm& alarm, const ClockDateTime& time) const;
     uint32_t getDayNumber(const ClockDateTime& time) const;
-    uint32_t getMinutesSinceMidnight(const ClockDateTime& time) const;
     DayMask getDayMask(int dayOfWeek) const;
     void resetDailyFlags(const ClockDateTime& time);
 };
