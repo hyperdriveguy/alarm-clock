@@ -100,7 +100,7 @@ IRAM_ATTR void handleDismissInterrupt() {
     buttonInterruptEvent = 2;
 }
 
-// NEW: LVGL messaging helper
+// LVGL messaging helper
 void lvgl_showMessage(const char* line1, const char* line2) {
     static lv_obj_t* msg_label1 = nullptr;
     static lv_obj_t* msg_label2 = nullptr;
@@ -116,7 +116,7 @@ void lvgl_showMessage(const char* line1, const char* line2) {
     lv_label_set_text(msg_label2, line2);
 }
 
-// NEW helper: alternate greeting based on time
+// Alternate greeting based on time
 String getGreeting() {
     ClockDateTime now = rtclock.nowSplit();
     if(now.hour < 12) return "Good morning!";
@@ -125,7 +125,7 @@ String getGreeting() {
     else return "Good night!";
 }
 
-// NEW helper: adjust brightness using LVGL (tft)
+// Adjust brightness using LVGL (tft)
 void adjustDisplaySettings() {
     ClockDateTime now = rtclock.nowSplit();
     if(now.hour >= 7 && now.hour < 19) {
@@ -133,7 +133,6 @@ void adjustDisplaySettings() {
     } else {
         tft.setBrightness(100);
     }
-    // ...additional LVGL color scheme adjustments...
 }
 
 void playerUpdateTask(void *param) {
@@ -143,7 +142,7 @@ void playerUpdateTask(void *param) {
     }
 }
 
-// NEW: Task to sync NTP periodically
+// Task to sync NTP periodically
 void ntpSyncTask(void* param) {
     while (true) {
         if(ntpConnected) {
@@ -163,26 +162,22 @@ void lvglLoopTask(void *param) {
 
 void alarmTask(void *param) {
     while (true) {
-        // Use a fallback time source if NTP is not available
         ClockDateTime currentTime;
         
         if (ntpConnected) {
             try {
                 currentTime = rtclock.nowSplit();
             } catch (...) {
-                ntpConnected = false;  // Mark as disconnected if it fails
+                ntpConnected = false;
                 Serial.println("NTP connection lost, switching to fallback");
             }
         }
         
         if (!ntpConnected) {
-            // Fallback to system time if NTP fails
             unsigned long currentMillis = millis();
-            // This is a very basic fallback - in practice you'd want a better RTC
             currentTime.hour = (currentMillis / 3600000) % 24;
             currentTime.minute = (currentMillis / 60000) % 60;
             currentTime.second = (currentMillis / 1000) % 60;
-            // Note: Date components would need proper handling in a real implementation
             currentTime.year = 2024;
             currentTime.month = 1;
             currentTime.day = 1;
@@ -205,12 +200,11 @@ void alarmTask(void *param) {
                 vTaskResume(playerTaskHandle);
                 player.play(Ch1, Ch2, Ch3);
                 {
-                    // NEW: update countdown display using getSnoozeUntil() from AlarmManager.
                     uint32_t currentMinutes = alarmManager.getMinutesSinceMidnight(currentTime);
                     uint32_t snoozeUntil = alarmManager.getSnoozeUntil();
                     uint32_t remaining = (snoozeUntil + (24*60) - currentMinutes) % (24*60);
                     int mins = remaining;
-                    int secs = 0; // For simplicity, seconds are shown as 0.
+                    int secs = 0;
                     String countdownStr = String("Countdown: ") + String(mins) + ":00";
                     lvgl_showMessage("SNOOZED", countdownStr.c_str());
                 }
@@ -221,7 +215,7 @@ void alarmTask(void *param) {
                 break;
         }
         
-        vTaskDelay(pdMS_TO_TICKS(1000)); // Check every second
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
@@ -234,7 +228,6 @@ void clockUpdateTask(void *param) {
     }
 }
 
-
 enum class ButtonType {
     NONE,
     SNOOZE,
@@ -243,50 +236,39 @@ enum class ButtonType {
 
 // Modified handleButtonPress: only physical interrupts are used for snooze/dismiss.
 void handleButtonPress() {
-    if (!alarmRinging) { // Only process button presses when an alarm is playing
+    if (!alarmRinging) {
         buttonInterruptEvent = 0;
         return;
     }
     if(buttonInterruptEvent != 0) {
-        if (buttonInterruptEvent == 1) {  // Snooze (Switch A)
+        if (buttonInterruptEvent == 1) {
             alarmManager.snoozeAlarm();
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
             lvgl_showMessage("SNOOZED", "Countdown: 9:00");
-        } else if (buttonInterruptEvent == 2) {  // Dismiss (Switch C)
+        } else if (buttonInterruptEvent == 2) {
             alarmManager.dismissAlarm();
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
             lvgl_showMessage(getGreeting().c_str(), "");
         }
-        buttonInterruptEvent = 0;  // clear flag
+        buttonInterruptEvent = 0;
         delay(2000);
         return;
     }
 }
 
 void setupExampleAlarms() {
-    // Weekday alarm at 7:00 AM
     alarmManager.addAlarm(7, 0, DayMask::WEEKDAYS);
-    
-    // // Weekend alarm at 9:00 AM
-    // alarmManager.addAlarm(9, 0, DayMask::WEEKEND);
-    
-    // // Daily reminder at 6:00 PM
-    // alarmManager.addAlarm(16, 1, DayMask::DAILY);
 }
 
-// NEW: Initialize peripherals including Serial, SPI, I2C, touchscreen, and display.
 void initializePeripherals() {
     Serial.begin(115200);
     while (!Serial) { delay(1); }
-    // Initialize SPI for display and SD card.
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
-    // Initialize I2C for touch controller.
     Wire.begin(CTP_SDA_PIN, CTP_SCL_PIN);
-    // Touch reset sequence.
     pinMode(CTP_RST_PIN, OUTPUT);
     digitalWrite(CTP_RST_PIN, HIGH);
     delay(10);
@@ -295,25 +277,62 @@ void initializePeripherals() {
     digitalWrite(CTP_RST_PIN, HIGH);
     delay(10);
     pinMode(CTP_INT_PIN, INPUT);
-    // Configure external switches.
     pinMode(SWITCH_A_PIN, INPUT_PULLUP);
-    pinMode(SWITCH_B_PIN, INPUT); // External pull-up
+    pinMode(SWITCH_B_PIN, INPUT);
     pinMode(SWITCH_C_PIN, INPUT);
     pinMode(SWITCH_D_PIN, INPUT);
     pinMode(SWITCH_E_PIN, INPUT);
     pinMode(SWITCH_F_PIN, INPUT);
     pinMode(SWITCH_G_PIN, INPUT);
-    // Set up button interrupts.
     attachInterrupt(digitalPinToInterrupt(SWITCH_A_PIN), handleSnoozeInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(SWITCH_C_PIN), handleDismissInterrupt, FALLING);
-    // Initialize music player.
     player.begin();
-    // Optionally show startup message via LVGL:
     lvgl_showMessage("Music Player", "Initialized");
     delay(500);
 }
 
-// NEW: Create tasks for player update, alarm, and display.
+// New function to open the settings menu using LVGL
+static void openSettingsMenu(lv_event_t * e) {
+    // Create a full-screen container for the settings menu
+    lv_obj_t * settings_cont = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(settings_cont, lv_pct(100), lv_pct(100));
+    lv_obj_center(settings_cont);
+    lv_obj_set_style_bg_color(settings_cont, lv_color_hex(0x333333), 0);
+    
+    // Add title label
+    lv_obj_t * title = lv_label_create(settings_cont);
+    lv_label_set_text(title, "Settings Menu");
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 20);
+    
+    // Add a close button
+    lv_obj_t * close_btn = lv_btn_create(settings_cont);
+    lv_obj_set_size(close_btn, 80, 40);
+    lv_obj_align(close_btn, LV_ALIGN_BOTTOM_MID, 0, -20);
+    lv_obj_t * close_label = lv_label_create(close_btn);
+    lv_label_set_text(close_label, "Close");
+    lv_obj_center(close_label);
+    
+    // Callback for close button: remove the settings menu
+    lv_obj_add_event_cb(close_btn, [](lv_event_t * e) {
+        lv_obj_del(lv_event_get_current_target(e)); // delete the close button's parent (settings container)
+    }, LV_EVENT_CLICKED, settings_cont);
+    
+    // Associate the settings container with the close callback
+    lv_obj_set_user_data(close_btn, settings_cont);
+}
+
+// New function to add a settings button on the default clock display
+static void createSettingsButton() {
+    lv_obj_t * btn = lv_btn_create(lv_scr_act());
+    lv_obj_set_size(btn, 40, 40);
+    lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, -10, 10);
+    lv_obj_t * btn_label = lv_label_create(btn);
+    lv_label_set_text(btn_label, "⚙"); // gear icon
+    lv_obj_center(btn_label);
+    lv_obj_add_event_cb(btn, openSettingsMenu, LV_EVENT_CLICKED, NULL);
+}
+
+// Modify initializeTasks() to add the settings button after creating the clock face.
 void initializeTasks() {
     xTaskCreatePinnedToCore(
         playerUpdateTask,
@@ -345,32 +364,28 @@ void initializeTasks() {
         nullptr,
         0
     );
-
+    
     xTaskCreatePinnedToCore(lvglLoopTask, "LVGL Loop", 4096, nullptr, 1, nullptr, 1);
+    
     createClockFace();
+    // New: add settings button on clock face
+    createSettingsButton();
+    
     xTaskCreatePinnedToCore(clockUpdateTask, "ClockUpdate", 2048, nullptr, 1, nullptr, 1);
     
-    lvgl_showMessage("Tasks Created", "Initializing clock");
+    lvgl_showMessage("Tasks", "Starting clock");
     delay(500);
 }
 
-// NEW: Set WiFi mode, initialize NTP clock, and set up example alarms.
 void initializeNTPAndAlarms() {
     WiFi.mode(WIFI_STA);
-    Serial.println("WiFi set to station mode.");
-    Serial.println("Attempting to initialize NTP clock...");
-    lvgl_showMessage("Connecting...", "NTP Server");
     rtclock.begin();
-    ntpConnected = true; // assume success if begin() returns
-    Serial.println("NTP clock initialized successfully.");
+    ntpConnected = true;
     setupExampleAlarms();
-    Serial.println("Example alarms set up.");
     lvgl_showMessage("Clock Ready", "Alarms set");
-    tft.setBrightness(200);  // Set comfortable brightness level
-    Serial.println("Setup complete!");
+    tft.setBrightness(200);
 }
 
-// Refactored setup() calls helper functions.
 void setup() {
     initializePeripherals();
     lvgl_setup();
@@ -381,12 +396,9 @@ void setup() {
 void loop() {
     alarmInterface.processCommands();
     handleButtonPress();
-    
-    // Adjust brightness and colors based on time (or overridden via Switch B).
     adjustDisplaySettings();
-    if(digitalRead(SWITCH_B_PIN) == LOW) {  // Physical override for brightness.
+    if(digitalRead(SWITCH_B_PIN) == LOW) {
         tft.setBrightness(255);
     }
-    
     delay(100);
 }
