@@ -1,24 +1,22 @@
 #include <Arduino.h>
+#include <LovyanGFX.hpp>
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_ILI9341.h>
 #include <Adafruit_FT6206.h>
 #include <ntp_clock64.h>
 #include <MusicPlayer.h>
-#include "DisplayInterface.h"
 #include "AlarmManager.h"
 #include "AlarmInterface.h"
-#include "MenuInterface.h"
+#include "lvgl_setup.h"
+#include <lvgl.h>
 #include "song/fireandflames.h"
+#include "clock_face.h"
+extern lgfx::LGFX_Device tft;  // From lvgl_setup.cpp
 
 // WiFi credentials
 static const char* WIFI_SSID     = "optix_legacy";
 static const char* WIFI_PASSWORD = "onmyhonor";
-
-// static const char* WIFI_SSID     = "BYUI_Visitor";
-// static const char* WIFI_PASSWORD = "";
 
 // POSIX TZ for US Mountain (auto-DST)
 static const char* POSIX_TZ = "MST7MDT,M3.2.0/2,M11.1.0/2";
@@ -73,12 +71,6 @@ static SPISettings tftSPISettings(TFT_SPI_FREQ, MSBFIRST, SPI_MODE0);
 // NTP Clock setup - sync every hour
 NTPClock64 rtclock(WIFI_SSID, WIFI_PASSWORD, POSIX_TZ, "pool.ntp.org", 3600);
 
-// Display and touch instances
-Adafruit_ILI9341 tft = Adafruit_ILI9341(LCD_CS_PIN, LCD_RS_PIN, LCD_RST_PIN);
-Adafruit_FT6206 touch = Adafruit_FT6206();
-DisplayInterface display(&tft, &touch, LED_PIN);
-MenuInterface menu(&display);
-
 // Music player with updated buzzer pins
 static constexpr int BUZZER_PINS[3] = { BUZZER1_PIN, BUZZER2_PIN, BUZZER4_PIN };
 static constexpr int LEDC_CH[3] = { BUZZER1_CH, BUZZER2_CH, BUZZER4_CH };
@@ -91,11 +83,9 @@ AlarmInterface alarmInterface(alarmManager);
 
 TaskHandle_t playerTaskHandle = nullptr;
 TaskHandle_t alarmTaskHandle = nullptr;
-TaskHandle_t displayTaskHandle = nullptr;
 
 bool alarmRinging = false;
 bool ntpConnected = false;  // Track NTP connection status
-bool updateTimeScreen = true;
 unsigned long buttonDebounceTime = 0;
 static constexpr unsigned long DEBOUNCE_DELAY = 50;
 
@@ -110,6 +100,22 @@ IRAM_ATTR void handleDismissInterrupt() {
     buttonInterruptEvent = 2;
 }
 
+// NEW: LVGL messaging helper
+void lvgl_showMessage(const char* line1, const char* line2) {
+    static lv_obj_t* msg_label1 = nullptr;
+    static lv_obj_t* msg_label2 = nullptr;
+    if (!msg_label1) {
+        msg_label1 = lv_label_create(lv_scr_act());
+        lv_obj_align(msg_label1, LV_ALIGN_TOP_MID, 0, 20);
+    }
+    if (!msg_label2) {
+        msg_label2 = lv_label_create(lv_scr_act());
+        lv_obj_align(msg_label2, LV_ALIGN_TOP_MID, 0, 60);
+    }
+    lv_label_set_text(msg_label1, line1);
+    lv_label_set_text(msg_label2, line2);
+}
+
 // NEW helper: alternate greeting based on time
 String getGreeting() {
     ClockDateTime now = rtclock.nowSplit();
@@ -119,15 +125,15 @@ String getGreeting() {
     else return "Good night!";
 }
 
-// NEW helper: adjust brightness and (optionally) color scheme based on time of day
+// NEW helper: adjust brightness using LVGL (tft)
 void adjustDisplaySettings() {
     ClockDateTime now = rtclock.nowSplit();
-    if(now.hour >=7 && now.hour <19) {
-        display.setBrightness(255);
+    if(now.hour >= 7 && now.hour < 19) {
+        tft.setBrightness(255);
     } else {
-        display.setBrightness(100);
+        tft.setBrightness(100);
     }
-    // ...additional color scheme adjustments can be added here...
+    // ...additional LVGL color scheme adjustments...
 }
 
 void playerUpdateTask(void *param) {
@@ -148,24 +154,10 @@ void ntpSyncTask(void* param) {
     }
 }
 
-// NEW: Task to handle interactive touchscreen menu
-void touchTask(void* param) {
-    while(true) {
-        // Check for touch input for settings then activate menu
-        
-
-            // New: Check for a tap in the settings button area (e.g. x>=270, y>=200)
-            if (display.isTouched() && updateTimeScreen) {
-                uint16_t tx, ty;
-                display.getTouchPoint(&tx, &ty);
-                Serial.printf("Touch at: %d, %d\n", tx, ty);
-                if (tx >= 195 && ty <= 32) {
-                    menu.activate();
-                    // Clear any pending touch inputs
-                }
-            }
-        menu.handle();
-        vTaskDelay(pdMS_TO_TICKS(100));
+void lvglLoopTask(void *param) {
+    while (true) {
+        lv_timer_handler();  // LVGL internal refresh
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
 
@@ -204,7 +196,7 @@ void alarmTask(void *param) {
                     alarmRinging = true;
                     vTaskResume(playerTaskHandle);
                     player.play(Ch1, Ch2, Ch3);
-                    display.showMessage("ALARM!", "snooze   |   dismiss");
+                    lvgl_showMessage("ALARM!", "snooze   |   dismiss");
                 }
                 break;
                 
@@ -219,7 +211,8 @@ void alarmTask(void *param) {
                     uint32_t remaining = (snoozeUntil + (24*60) - currentMinutes) % (24*60);
                     int mins = remaining;
                     int secs = 0; // For simplicity, seconds are shown as 0.
-                    display.showMessage("SNOOZED", String("Countdown: ") + String(mins) + ":00");
+                    String countdownStr = String("Countdown: ") + String(mins) + ":00";
+                    lvgl_showMessage("SNOOZED", countdownStr.c_str());
                 }
                 break;
                 
@@ -232,17 +225,15 @@ void alarmTask(void *param) {
     }
 }
 
-void displayTask(void* param) {
+#include "clock_face.h"
+
+void clockUpdateTask(void *param) {
     while (true) {
-        // Only update time display if not in settings menu (updateTimeScreen is true)
-        if (updateTimeScreen && !alarmRinging && !alarmManager.isAlarmActive()) {
-            ClockDateTime currentTime = rtclock.nowSplit();
-            display.showTime(&currentTime);
-            display.drawSettingsButton();  // draw settings button in lower right
-        }
-        vTaskDelay(pdMS_TO_TICKS(500)); // update display more frequently
+        updateClockDisplay();
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
+
 
 enum class ButtonType {
     NONE,
@@ -262,13 +253,13 @@ void handleButtonPress() {
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
-            display.showMessage("SNOOZED", "Countdown: 9:00");
+            lvgl_showMessage("SNOOZED", "Countdown: 9:00");
         } else if (buttonInterruptEvent == 2) {  // Dismiss (Switch C)
             alarmManager.dismissAlarm();
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
-            display.showMessage(getGreeting(), "");
+            lvgl_showMessage(getGreeting().c_str(), "");
         }
         buttonInterruptEvent = 0;  // clear flag
         delay(2000);
@@ -315,16 +306,11 @@ void initializePeripherals() {
     // Set up button interrupts.
     attachInterrupt(digitalPinToInterrupt(SWITCH_A_PIN), handleSnoozeInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(SWITCH_C_PIN), handleDismissInterrupt, FALLING);
-    // Initialize display.
-    display.begin(TFT_SPI_FREQ);
-    display.showMessage("Initializing...", "Starting up");
-    delay(1000);
     // Initialize music player.
     player.begin();
-    display.showMessage("Music Player", "Initialized");
+    // Optionally show startup message via LVGL:
+    lvgl_showMessage("Music Player", "Initialized");
     delay(500);
-    menu.begin();
-    display.showMessage("Menu Interface", "Ready");
 }
 
 // NEW: Create tasks for player update, alarm, and display.
@@ -351,16 +337,6 @@ void initializeTasks() {
     );
     
     xTaskCreatePinnedToCore(
-        displayTask,
-        "DisplayTask",
-        4096,
-        nullptr,
-        1,
-        &displayTaskHandle,
-        1
-    );
-    // NEW: Create tasks for NTP sync and touchscreen menu handling.
-    xTaskCreatePinnedToCore(
         ntpSyncTask,
         "NTPSyncTask",
         4096,
@@ -369,16 +345,12 @@ void initializeTasks() {
         nullptr,
         0
     );
-    xTaskCreatePinnedToCore(
-        touchTask,
-        "TouchTask",
-        4096,
-        nullptr,
-        1,
-        nullptr,
-        1
-    );
-    display.showMessage("Tasks Created", "Initializing clock");
+
+    xTaskCreatePinnedToCore(lvglLoopTask, "LVGL Loop", 4096, nullptr, 1, nullptr, 1);
+    createClockFace();
+    xTaskCreatePinnedToCore(clockUpdateTask, "ClockUpdate", 2048, nullptr, 1, nullptr, 1);
+    
+    lvgl_showMessage("Tasks Created", "Initializing clock");
     delay(500);
 }
 
@@ -387,33 +359,33 @@ void initializeNTPAndAlarms() {
     WiFi.mode(WIFI_STA);
     Serial.println("WiFi set to station mode.");
     Serial.println("Attempting to initialize NTP clock...");
-    display.showMessage("Connecting...", "NTP Server");
+    lvgl_showMessage("Connecting...", "NTP Server");
     rtclock.begin();
     ntpConnected = true; // assume success if begin() returns
     Serial.println("NTP clock initialized successfully.");
     setupExampleAlarms();
     Serial.println("Example alarms set up.");
-    display.showMessage("Clock Ready", "Alarms set");
-    display.setBrightness(200);  // Set comfortable brightness level
+    lvgl_showMessage("Clock Ready", "Alarms set");
+    tft.setBrightness(200);  // Set comfortable brightness level
     Serial.println("Setup complete!");
 }
 
 // Refactored setup() calls helper functions.
 void setup() {
     initializePeripherals();
+    lvgl_setup();
     initializeTasks();
     initializeNTPAndAlarms();
 }
 
 void loop() {
-    // Removed NTP clock update from loop; NTP sync happens in ntpSyncTask.
     alarmInterface.processCommands();
     handleButtonPress();
     
     // Adjust brightness and colors based on time (or overridden via Switch B).
     adjustDisplaySettings();
     if(digitalRead(SWITCH_B_PIN) == LOW) {  // Physical override for brightness.
-        display.setBrightness(255);
+        tft.setBrightness(255);
     }
     
     delay(100);
