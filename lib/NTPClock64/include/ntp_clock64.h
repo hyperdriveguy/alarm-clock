@@ -65,6 +65,10 @@ class NTPClock64 {
   const char* ntpServer_;
   uint32_t    syncInterval_;
   uint32_t    lastSync_ = 0;
+  // New members for offline mode
+  bool offlineMode_ = false;
+  time_t offlineBaseTime_ = 0;
+  uint32_t offlineStartMillis_ = 0;
 };
 
 #endif  // NTP_CLOCK64_H

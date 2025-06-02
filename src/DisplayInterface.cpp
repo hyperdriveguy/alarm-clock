@@ -6,7 +6,7 @@ DisplayInterface::DisplayInterface(Adafruit_ILI9341* tft_display, Adafruit_FT620
       touchController(touch_controller),
       backlightPin(backlight_pin),
       backlightChannel(7),  // Use channel 7 for backlight PWM
-      prev_time_struct(nullptr) {
+      prevTimeValid(false) {
 }
 
 void DisplayInterface::begin(uint32_t freq) {
@@ -37,36 +37,35 @@ void DisplayInterface::setBrightness(uint8_t level) {
 }
 
 void DisplayInterface::showTime(const ClockDateTime* time_struct) {
-    // Initial full draw
-    if (prev_time_struct == nullptr) {
+    if (!prevTimeValid) {
         clearScreen();
-        
-        // Draw time (HH:MM:SS)
+        // Draw full time (HH:MM:SS)
         tft->setTextSize(4);
         tft->setTextColor(CYAN);
         String timeStr = String(time_struct->hour < 10 ? "0" : "") + String(time_struct->hour) + ":" +
-                        String(time_struct->minute < 10 ? "0" : "") + String(time_struct->minute) + ":" +
-                        String(time_struct->second < 10 ? "0" : "") + String(time_struct->second);
+                         String(time_struct->minute < 10 ? "0" : "") + String(time_struct->minute) + ":" +
+                         String(time_struct->second < 10 ? "0" : "") + String(time_struct->second);
         drawCenteredText(timeStr, TIME_Y, CYAN, 4);
         
-        // Draw date (YYYY-MM-DD)
+        // Draw full date (YYYY-MM-DD)
         tft->setTextSize(2);
         tft->setTextColor(YELLOW);
         String dateStr = String(time_struct->year) + "-" +
-                        String(time_struct->month < 10 ? "0" : "") + String(time_struct->month) + "-" +
-                        String(time_struct->day < 10 ? "0" : "") + String(time_struct->day);
+                         String(time_struct->month < 10 ? "0" : "") + String(time_struct->month) + "-" +
+                         String(time_struct->day < 10 ? "0" : "") + String(time_struct->day);
         drawCenteredText(dateStr, DATE_Y, YELLOW, 2);
         
-        prev_time_struct = time_struct;
+        // Save the time for later comparison.
+        prev_time_struct = *time_struct;
+        prevTimeValid = true;
         return;
     }
-
-    // Update only changed fields for efficiency
-    updateTimeDisplay(time_struct, prev_time_struct);
     
-    // Clean up previous time struct and store new one
-    delete prev_time_struct;
-    prev_time_struct = time_struct;
+    // Update only if any time component changed
+    updateTimeDisplay(time_struct, &prev_time_struct);
+    
+    // Copy new time into the internal record.
+    prev_time_struct = *time_struct;
 }
 
 void DisplayInterface::updateTimeDisplay(const ClockDateTime* current, const ClockDateTime* previous) {

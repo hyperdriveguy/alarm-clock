@@ -27,10 +27,7 @@ class DisplayInterface {
   void begin(uint32_t freq);
   void setBrightness(uint8_t level);  // 0–255
 
-  /**
-   * Takes ownership of `time_struct`, which must be allocated with `new`.
-   * It will be deleted internally after the next update.
-   */
+  // Takes the provided time; ownership is not transferred.
   void showTime(const ClockDateTime* time_struct);
   
   void showMessage(const String& line1, const String& line2 = "");
@@ -48,7 +45,10 @@ class DisplayInterface {
   Adafruit_FT6206* touchController;
   uint8_t backlightPin;
   uint8_t backlightChannel;
-  const ClockDateTime* prev_time_struct;
+  
+  // Replace dynamic allocation with an internal copy.
+  ClockDateTime prev_time_struct;
+  bool prevTimeValid;
   
   // Display dimensions
   static const uint16_t SCREEN_WIDTH = 320;

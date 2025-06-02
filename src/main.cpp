@@ -89,11 +89,23 @@ AlarmInterface alarmInterface(alarmManager);
 
 TaskHandle_t playerTaskHandle = nullptr;
 TaskHandle_t alarmTaskHandle = nullptr;
+TaskHandle_t displayTaskHandle = nullptr;
 
 bool alarmRinging = false;
 bool ntpConnected = false;  // Track NTP connection status
 unsigned long buttonDebounceTime = 0;
 static constexpr unsigned long DEBOUNCE_DELAY = 50;
+
+// Add global volatile flag for button interrupts (0: none, 1: snooze, 2: dismiss)
+volatile uint8_t buttonInterruptEvent = 0;
+
+// IRAM_ATTR ISRs for physical button interrupts
+IRAM_ATTR void handleSnoozeInterrupt() {
+    buttonInterruptEvent = 1;
+}
+IRAM_ATTR void handleDismissInterrupt() {
+    buttonInterruptEvent = 2;
+}
 
 void playerUpdateTask(void *param) {
     while (true) {
@@ -157,6 +169,17 @@ void alarmTask(void *param) {
     }
 }
 
+void displayTask(void* param) {
+    while (true) {
+        // Only update if no active alarm
+        if (!alarmRinging && !alarmManager.isAlarmActive()) {
+            ClockDateTime currentTime = rtclock.nowSplit();
+            display.showTime(&currentTime);
+        }
+        vTaskDelay(pdMS_TO_TICKS(500)); // update display more frequently
+    }
+}
+
 enum class ButtonType {
     NONE,
     SNOOZE,
@@ -190,27 +213,30 @@ ButtonType readButtonFromTouch() {
     }
 }
 
+// Modified handleButtonPress: process physical interrupts first then touch
 void handleButtonPress() {
-    unsigned long currentTime = millis();
-    
-    // Debounce check
-    if (currentTime - buttonDebounceTime < DEBOUNCE_DELAY) {
+    if(buttonInterruptEvent != 0) {
+        if (buttonInterruptEvent == 1) {
+            alarmManager.snoozeAlarm();
+            player.stop();
+            vTaskSuspend(playerTaskHandle);
+            alarmRinging = false;
+            display.showMessage("SNOOZED", "9 minutes");
+        } else if (buttonInterruptEvent == 2) {
+            alarmManager.dismissAlarm();
+            player.stop();
+            vTaskSuspend(playerTaskHandle);
+            alarmRinging = false;
+            display.showMessage("DISMISSED", "Good morning!");
+        }
+        buttonInterruptEvent = 0;  // clear the flag
+        delay(2000);  // allow message to be visible
         return;
     }
     
-    // Check both physical switches and touch input
-    ButtonType button = readButtonFromSwitches();
+    // Process touch input if no physical interrupt event
+    ButtonType button = readButtonFromTouch();
     if (button == ButtonType::NONE) {
-        button = readButtonFromTouch();
-    }
-    
-    if (button == ButtonType::NONE) {
-        return;
-    }
-    
-    buttonDebounceTime = currentTime;
-    
-    if (!alarmManager.isAlarmActive() && !alarmRinging) {
         return;
     }
     
@@ -242,17 +268,15 @@ void setupExampleAlarms() {
     alarmManager.addAlarm(16, 1, DayMask::DAILY);
 }
 
-void setup() {
+// NEW: Initialize peripherals including Serial, SPI, I2C, touchscreen, and display.
+void initializePeripherals() {
     Serial.begin(115200);
     while (!Serial) { delay(1); }
-
-    // Initialize SPI for display and SD card
+    // Initialize SPI for display and SD card.
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
-    
-    // Initialize I2C for touch controller
+    // Initialize I2C for touch controller.
     Wire.begin(CTP_SDA_PIN, CTP_SCL_PIN);
-    
-    // Touch reset sequence
+    // Touch reset sequence.
     pinMode(CTP_RST_PIN, OUTPUT);
     digitalWrite(CTP_RST_PIN, HIGH);
     delay(10);
@@ -260,11 +284,8 @@ void setup() {
     delay(10);
     digitalWrite(CTP_RST_PIN, HIGH);
     delay(10);
-    
-    // Touch interrupt pin
     pinMode(CTP_INT_PIN, INPUT);
-    
-    // Configure external switches
+    // Configure external switches.
     pinMode(SWITCH_A_PIN, INPUT_PULLUP);
     pinMode(SWITCH_B_PIN, INPUT); // External pull-up
     pinMode(SWITCH_C_PIN, INPUT);
@@ -272,18 +293,21 @@ void setup() {
     pinMode(SWITCH_E_PIN, INPUT);
     pinMode(SWITCH_F_PIN, INPUT);
     pinMode(SWITCH_G_PIN, INPUT);
-    
-    // Initialize display FIRST so we can show status messages
+    // Set up button interrupts.
+    attachInterrupt(digitalPinToInterrupt(SWITCH_A_PIN), handleSnoozeInterrupt, FALLING);
+    attachInterrupt(digitalPinToInterrupt(SWITCH_C_PIN), handleDismissInterrupt, FALLING);
+    // Initialize display.
     display.begin(TFT_SPI_FREQ);
     display.showMessage("Initializing...", "Starting up");
     delay(1000);
-    
-    // Initialize music player
+    // Initialize music player.
     player.begin();
     display.showMessage("Music Player", "Initialized");
     delay(500);
+}
 
-    // Create player task (starts suspended)
+// NEW: Create tasks for player update, alarm, and display.
+void initializeTasks() {
     xTaskCreatePinnedToCore(
         playerUpdateTask,
         "PlayerUpdateTask",
@@ -295,129 +319,55 @@ void setup() {
     );
     vTaskSuspend(playerTaskHandle);
     
-    // Create alarm task
     xTaskCreatePinnedToCore(
         alarmTask,
-        "AlarmTask", 
+        "AlarmTask",
         4096,
         nullptr,
-        2, // Higher priority than player
+        2,
         &alarmTaskHandle,
         0
     );
     
+    xTaskCreatePinnedToCore(
+        displayTask,
+        "DisplayTask",
+        4096,
+        nullptr,
+        1,
+        &displayTaskHandle,
+        1
+    );
     display.showMessage("Tasks Created", "Initializing clock");
     delay(500);
+}
 
-    // Initialize clock with timeout protection
+// NEW: Set WiFi mode, initialize NTP clock, and set up example alarms.
+void initializeNTPAndAlarms() {
+    WiFi.mode(WIFI_STA);
+    Serial.println("WiFi set to station mode.");
     Serial.println("Attempting to initialize NTP clock...");
     display.showMessage("Connecting...", "NTP Server");
-    
-    // Create a task to handle NTP initialization with timeout
-    TaskHandle_t ntpInitTask = nullptr;
-    bool ntpTaskCompleted = false;
-    
-    // Create NTP initialization task
-    xTaskCreate([](void* param) {
-        bool* completed = (bool*)param;
-        try {
-            rtclock.begin();
-            ntpConnected = true;
-            Serial.println("NTP clock initialized successfully");
-        } catch (...) {
-            ntpConnected = false;
-            Serial.println("NTP clock initialization failed");
-        }
-        *completed = true;
-        vTaskDelete(nullptr);
-    }, "NTPInit", 4096, &ntpTaskCompleted, 1, &ntpInitTask);
-    
-    // Wait for completion or timeout
-    unsigned long startTime = millis();
-    const unsigned long NTP_TIMEOUT = 15000; // 15 seconds timeout
-    
-    while (!ntpTaskCompleted && (millis() - startTime) < NTP_TIMEOUT) {
-        delay(100);
-        // Update display with progress
-        if ((millis() - startTime) % 2000 < 100) {
-            display.showMessage("Connecting...", String((millis() - startTime) / 1000) + "s");
-        }
-    }
-    
-    // Clean up the task if it's still running
-    if (!ntpTaskCompleted && ntpInitTask != nullptr) {
-        vTaskDelete(ntpInitTask);
-        Serial.println("NTP initialization timed out");
-        display.showMessage("NTP Timeout", "Using offline mode");
-        ntpConnected = false;
-    }
-    
-    if (ntpConnected) {
-        display.showMessage("NTP Connected", "Time synchronized");
-    } else {
-        display.showMessage("Offline Mode", "No internet connection");
-    }
-    
-    delay(1000);
-    
-    // Setup example alarms
+    rtclock.begin();
+    ntpConnected = true; // assume success if begin() returns
+    Serial.println("NTP clock initialized successfully.");
     setupExampleAlarms();
-    
+    Serial.println("Example alarms set up.");
     display.showMessage("Clock Ready", "Alarms set");
-    delay(2000);
     display.setBrightness(200);  // Set comfortable brightness level
-    
     Serial.println("Setup complete!");
 }
 
+// Refactored setup() calls helper functions.
+void setup() {
+    initializePeripherals();
+    initializeTasks();
+    initializeNTPAndAlarms();
+}
+
 void loop() {
-    // Update clock with error handling only if NTP is connected
-    if (ntpConnected) {
-        try {
-            rtclock.update();
-        } catch (...) {
-            // Continue even if NTP update fails
-            ntpConnected = false;
-            Serial.println("NTP update failed, switching to offline mode");
-        }
-    }
-    
-    // Get current time with fallback
-    ClockDateTime* td = nullptr;
-    
-    if (ntpConnected) {
-        try {
-            td = new ClockDateTime(rtclock.nowSplit());
-        } catch (...) {
-            ntpConnected = false;
-            Serial.println("NTP time retrieval failed");
-        }
-    }
-    
-    if (!ntpConnected || td == nullptr) {
-        // Create a basic fallback time structure
-        td = new ClockDateTime();
-        unsigned long currentMillis = millis();
-        td->hour = (currentMillis / 3600000) % 24;
-        td->minute = (currentMillis / 60000) % 60;
-        td->second = (currentMillis / 1000) % 60;
-        td->year = 2024;  // Fallback year
-        td->month = 1;    // Fallback month
-        td->day = 1;      // Fallback day
-    }
-    
-    // Process alarm commands from serial
+    rtclock.update();
     alarmInterface.processCommands();
-    
-    // Check for button presses (both physical switches and touch)
     handleButtonPress();
-    
-    // Show time normally, or alarm info if alarm is active
-    if (alarmRinging || alarmManager.isAlarmActive()) {
-        // Keep showing alarm message
-    } else {
-        display.showTime(td);
-    }
-    
-    delay(1000);
+    delay(100);
 }
