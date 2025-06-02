@@ -10,6 +10,7 @@
 #include "DisplayInterface.h"
 #include "AlarmManager.h"
 #include "AlarmInterface.h"
+#include "MenuInterface.h"
 #include "song/fireandflames.h"
 
 // WiFi credentials
@@ -76,6 +77,7 @@ NTPClock64 rtclock(WIFI_SSID, WIFI_PASSWORD, POSIX_TZ, "pool.ntp.org", 3600);
 Adafruit_ILI9341 tft = Adafruit_ILI9341(LCD_CS_PIN, LCD_RS_PIN, LCD_RST_PIN);
 Adafruit_FT6206 touch = Adafruit_FT6206();
 DisplayInterface display(&tft, &touch, LED_PIN);
+MenuInterface menu(&display);
 
 // Music player with updated buzzer pins
 static constexpr int BUZZER_PINS[3] = { BUZZER1_PIN, BUZZER2_PIN, BUZZER4_PIN };
@@ -149,22 +151,21 @@ void ntpSyncTask(void* param) {
 // NEW: Task to handle interactive touchscreen menu
 void touchTask(void* param) {
     while(true) {
-        if(display.isTouched()){
-            uint16_t x, y;
-            display.getTouchPoint(&x, &y);
-            Serial.printf("Touch at (%d, %d)\n", x, y);
-            // Check for lower right area touch (taking rotated display into account)
-            if(x > 200 && y < 45) {
-                updateTimeScreen = false;  // Disable time screen updates
-                display.showMessage("Settings", "Select WiFi");
-                delay(2000);
-                // ...insert interactive menu logic (e.g. list wifi networks)...
-                display.showMessage("Resuming", "");
-                delay(500);
-                updateTimeScreen = true;  // Re-enable time screen updates
+        // Check for touch input for settings then activate menu
+        
+
+            // New: Check for a tap in the settings button area (e.g. x>=270, y>=200)
+            if (display.isTouched() && updateTimeScreen) {
+                uint16_t tx, ty;
+                display.getTouchPoint(&tx, &ty);
+                Serial.printf("Touch at: %d, %d\n", tx, ty);
+                if (tx >= 195 && ty <= 32) {
+                    menu.activate();
+                    // Clear any pending touch inputs
+                }
             }
-        }
-        vTaskDelay(pdMS_TO_TICKS(200));
+        menu.handle();
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
@@ -233,10 +234,11 @@ void alarmTask(void *param) {
 
 void displayTask(void* param) {
     while (true) {
-        // Only update if no active alarm
+        // Only update time display if not in settings menu (updateTimeScreen is true)
         if (updateTimeScreen && !alarmRinging && !alarmManager.isAlarmActive()) {
             ClockDateTime currentTime = rtclock.nowSplit();
             display.showTime(&currentTime);
+            display.drawSettingsButton();  // draw settings button in lower right
         }
         vTaskDelay(pdMS_TO_TICKS(500)); // update display more frequently
     }
@@ -278,11 +280,11 @@ void setupExampleAlarms() {
     // Weekday alarm at 7:00 AM
     alarmManager.addAlarm(7, 0, DayMask::WEEKDAYS);
     
-    // Weekend alarm at 9:00 AM
-    alarmManager.addAlarm(9, 0, DayMask::WEEKEND);
+    // // Weekend alarm at 9:00 AM
+    // alarmManager.addAlarm(9, 0, DayMask::WEEKEND);
     
-    // Daily reminder at 6:00 PM
-    alarmManager.addAlarm(16, 1, DayMask::DAILY);
+    // // Daily reminder at 6:00 PM
+    // alarmManager.addAlarm(16, 1, DayMask::DAILY);
 }
 
 // NEW: Initialize peripherals including Serial, SPI, I2C, touchscreen, and display.
@@ -321,6 +323,8 @@ void initializePeripherals() {
     player.begin();
     display.showMessage("Music Player", "Initialized");
     delay(500);
+    menu.begin();
+    display.showMessage("Menu Interface", "Ready");
 }
 
 // NEW: Create tasks for player update, alarm, and display.

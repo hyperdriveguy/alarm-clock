@@ -148,3 +148,14 @@ void DisplayInterface::drawCenteredText(const String& text, int16_t y, uint16_t 
     tft->setCursor(x, y);
     tft->print(text);
 }
+
+void DisplayInterface::drawSettingsButton() {
+    int buttonW = 40, buttonH = 30;
+    int x = SCREEN_WIDTH - buttonW - 5;
+    int y = SCREEN_HEIGHT - buttonH - 5;
+    tft->fillRect(x, y, buttonW, buttonH, DARKGRAY);
+    tft->setTextSize(1);
+    tft->setTextColor(WHITE);
+    tft->setCursor(x + 5, y + 10);
+    tft->print("SET");
+}

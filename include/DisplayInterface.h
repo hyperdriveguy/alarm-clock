@@ -40,6 +40,12 @@ class DisplayInterface {
   void clearScreen();
   void drawCenteredText(const String& text, int16_t y, uint16_t color = WHITE, uint8_t textSize = 2);
 
+  // Draw the settings button in lower right of the screen
+  void drawSettingsButton();
+
+  // Public accessor for the internal tft pointer.
+  Adafruit_ILI9341* getTft() { return tft; }
+
  private:
   Adafruit_ILI9341* tft;
   Adafruit_FT6206* touchController;
