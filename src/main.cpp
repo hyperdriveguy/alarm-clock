@@ -8,10 +8,10 @@
 #include <MusicPlayer.h>
 #include "AlarmManager.h"
 #include "AlarmInterface.h"
-#include "lvgl_setup.h"
-#include <lvgl.h>
+// #include "lvgl_setup.h"
+// #include <lvgl.h>
 #include "song/fireandflames.h"
-#include "clock_face.h"
+// #include "clock_face.h"
 extern lgfx::LGFX_Device tft;  // From lvgl_setup.cpp
 
 // WiFi credentials
@@ -100,21 +100,21 @@ IRAM_ATTR void handleDismissInterrupt() {
     buttonInterruptEvent = 2;
 }
 
-// LVGL messaging helper
-void lvgl_showMessage(const char* line1, const char* line2) {
-    static lv_obj_t* msg_label1 = nullptr;
-    static lv_obj_t* msg_label2 = nullptr;
-    if (!msg_label1) {
-        msg_label1 = lv_label_create(lv_scr_act());
-        lv_obj_align(msg_label1, LV_ALIGN_TOP_MID, 0, 20);
-    }
-    if (!msg_label2) {
-        msg_label2 = lv_label_create(lv_scr_act());
-        lv_obj_align(msg_label2, LV_ALIGN_TOP_MID, 0, 60);
-    }
-    lv_label_set_text(msg_label1, line1);
-    lv_label_set_text(msg_label2, line2);
-}
+// // LVGL messaging helper
+// void lvgl_showMessage(const char* line1, const char* line2) {
+//     static lv_obj_t* msg_label1 = nullptr;
+//     static lv_obj_t* msg_label2 = nullptr;
+//     if (!msg_label1) {
+//         msg_label1 = lv_label_create(lv_scr_act());
+//         lv_obj_align(msg_label1, LV_ALIGN_TOP_MID, 0, 20);
+//     }
+//     if (!msg_label2) {
+//         msg_label2 = lv_label_create(lv_scr_act());
+//         lv_obj_align(msg_label2, LV_ALIGN_TOP_MID, 0, 60);
+//     }
+//     lv_label_set_text(msg_label1, line1);
+//     lv_label_set_text(msg_label2, line2);
+// }
 
 // Alternate greeting based on time
 String getGreeting() {
@@ -153,12 +153,12 @@ void ntpSyncTask(void* param) {
     }
 }
 
-void lvglLoopTask(void *param) {
-    while (true) {
-        lv_timer_handler();  // LVGL internal refresh
-        vTaskDelay(pdMS_TO_TICKS(5));
-    }
-}
+// void lvglLoopTask(void *param) {
+//     while (true) {
+//         lv_timer_handler();  // LVGL internal refresh
+//         vTaskDelay(pdMS_TO_TICKS(5));
+//     }
+// }
 
 void alarmTask(void *param) {
     while (true) {
@@ -191,7 +191,7 @@ void alarmTask(void *param) {
                     alarmRinging = true;
                     vTaskResume(playerTaskHandle);
                     player.play(Ch1, Ch2, Ch3);
-                    lvgl_showMessage("ALARM!", "snooze   |   dismiss");
+                    // lvgl_showMessage("ALARM!", "snooze   |   dismiss");
                 }
                 break;
                 
@@ -206,7 +206,7 @@ void alarmTask(void *param) {
                     int mins = remaining;
                     int secs = 0;
                     String countdownStr = String("Countdown: ") + String(mins) + ":00";
-                    lvgl_showMessage("SNOOZED", countdownStr.c_str());
+                    // lvgl_showMessage("SNOOZED", countdownStr.c_str());
                 }
                 break;
                 
@@ -215,15 +215,6 @@ void alarmTask(void *param) {
                 break;
         }
         
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
-
-#include "clock_face.h"
-
-void clockUpdateTask(void *param) {
-    while (true) {
-        updateClockDisplay();
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -246,13 +237,13 @@ void handleButtonPress() {
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
-            lvgl_showMessage("SNOOZED", "Countdown: 9:00");
+            // lvgl_showMessage("SNOOZED", "Countdown: 9:00");
         } else if (buttonInterruptEvent == 2) {
             alarmManager.dismissAlarm();
             player.stop();
             vTaskSuspend(playerTaskHandle);
             alarmRinging = false;
-            lvgl_showMessage(getGreeting().c_str(), "");
+            // lvgl_showMessage(getGreeting().c_str(), "");
         }
         buttonInterruptEvent = 0;
         delay(2000);
@@ -287,49 +278,6 @@ void initializePeripherals() {
     attachInterrupt(digitalPinToInterrupt(SWITCH_A_PIN), handleSnoozeInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(SWITCH_C_PIN), handleDismissInterrupt, FALLING);
     player.begin();
-    lvgl_showMessage("Music Player", "Initialized");
-    delay(500);
-}
-
-// New function to open the settings menu using LVGL
-static void openSettingsMenu(lv_event_t * e) {
-    // Create a full-screen container for the settings menu
-    lv_obj_t * settings_cont = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(settings_cont, lv_pct(100), lv_pct(100));
-    lv_obj_center(settings_cont);
-    lv_obj_set_style_bg_color(settings_cont, lv_color_hex(0x333333), 0);
-    
-    // Add title label
-    lv_obj_t * title = lv_label_create(settings_cont);
-    lv_label_set_text(title, "Settings Menu");
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 20);
-    
-    // Add a close button
-    lv_obj_t * close_btn = lv_btn_create(settings_cont);
-    lv_obj_set_size(close_btn, 80, 40);
-    lv_obj_align(close_btn, LV_ALIGN_BOTTOM_MID, 0, -20);
-    lv_obj_t * close_label = lv_label_create(close_btn);
-    lv_label_set_text(close_label, "Close");
-    lv_obj_center(close_label);
-    
-    // Callback for close button: remove the settings menu
-    lv_obj_add_event_cb(close_btn, [](lv_event_t * e) {
-        lv_obj_del(lv_event_get_current_target(e)); // delete the close button's parent (settings container)
-    }, LV_EVENT_CLICKED, settings_cont);
-    
-    // Associate the settings container with the close callback
-    lv_obj_set_user_data(close_btn, settings_cont);
-}
-
-// New function to add a settings button on the default clock display
-static void createSettingsButton() {
-    lv_obj_t * btn = lv_btn_create(lv_scr_act());
-    lv_obj_set_size(btn, 40, 40);
-    lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, -10, 10);
-    lv_obj_t * btn_label = lv_label_create(btn);
-    lv_label_set_text(btn_label, "⚙"); // gear icon
-    lv_obj_center(btn_label);
-    lv_obj_add_event_cb(btn, openSettingsMenu, LV_EVENT_CLICKED, NULL);
 }
 
 // Modify initializeTasks() to add the settings button after creating the clock face.
@@ -365,16 +313,7 @@ void initializeTasks() {
         0
     );
     
-    xTaskCreatePinnedToCore(lvglLoopTask, "LVGL Loop", 4096, nullptr, 1, nullptr, 1);
-    
-    createClockFace();
-    // New: add settings button on clock face
-    createSettingsButton();
-    
-    xTaskCreatePinnedToCore(clockUpdateTask, "ClockUpdate", 2048, nullptr, 1, nullptr, 1);
-    
-    lvgl_showMessage("Tasks", "Starting clock");
-    delay(500);
+    // xTaskCreatePinnedToCore(clockUpdateTask, "ClockUpdate", 2048, nullptr, 1, nullptr, 1);
 }
 
 void initializeNTPAndAlarms() {
@@ -382,13 +321,11 @@ void initializeNTPAndAlarms() {
     rtclock.begin();
     ntpConnected = true;
     setupExampleAlarms();
-    lvgl_showMessage("Clock Ready", "Alarms set");
     tft.setBrightness(200);
 }
 
 void setup() {
     initializePeripherals();
-    lvgl_setup();
     initializeTasks();
     initializeNTPAndAlarms();
 }
