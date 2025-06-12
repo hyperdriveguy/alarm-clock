@@ -281,8 +281,8 @@ void setupExampleAlarms() {
     // Weekend alarm at 9:00 AM
     alarmManager.addAlarm(9, 0, DayMask::WEEKEND);
     
-    // Daily reminder at 6:00 PM
-    alarmManager.addAlarm(16, 1, DayMask::DAILY);
+    // Daily reminder at 4:00 PM
+    // alarmManager.addAlarm(16, 0, DayMask::DAILY);
 }
 
 // NEW: Initialize peripherals including Serial, SPI, I2C, touchscreen, and display.
