@@ -48,7 +48,7 @@ static constexpr int8_t BUZZER3_PIN = 17; // Shorted (oopsie) so no sound (do no
 static constexpr int8_t BUZZER4_PIN = 21;
 
 // External Switch pins
-static constexpr int8_t SWITCH_A_PIN = 11; // No internal pull-up
+static constexpr int8_t SWITCH_A_PIN = 11; // Internal pull-up
 static constexpr int8_t SWITCH_B_PIN = 12; // External pull-up
 static constexpr int8_t SWITCH_C_PIN = 35; // External pull-up
 static constexpr int8_t SWITCH_D_PIN = 36; // External pull-up
